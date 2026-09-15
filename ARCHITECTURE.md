@@ -180,7 +180,7 @@ Deferred to Phase 2/3 (stubbed with clear "coming soon" or interface-only where 
 ## 16. Technical architecture (as implemented)
 
 - Next.js 16 (App Router, Server Components + Server Actions), TypeScript, Tailwind v4.
-- Prisma ORM. **Local/demo datasource: SQLite** (zero external services, `npm install && npm run db:seed && npm run dev` just works on this machine — no Docker/Postgres available in this environment). Schema deliberately avoids Postgres-only features (no native arrays/enums-as-DB-types beyond what Prisma abstracts) so switching `provider = "postgresql"` + `DATABASE_URL` is the only change needed for production, per the brief's recommendation.
+- Prisma ORM + **PostgreSQL**, in every environment including local dev (see README's "Getting started" for a free Neon/Vercel Postgres option). Originally SQLite for local-only development (no Docker/Postgres service was available in that environment), switched to Postgres once the app was deployed to Vercel — SQLite is a file on disk and cannot run on serverless functions with no persistent filesystem. The schema was deliberately kept free of Postgres-only features from the start specifically so this was a one-line provider swap, per the brief's recommendation.
 - Auth.js (NextAuth) v5, Credentials provider + bcrypt for demo accounts; JWT session.
 - Hand-built, small design-system component set (Button, Card, Badge/StatusPill, Table, Tabs, Field/Input/Select/Textarea) on Tailwind tokens matching MyFundAction brand colours — avoids the extra CLI/network dependency of shadcn's installer while following the same composition pattern, so it can be swapped in later with no architectural change.
 - Local filesystem storage under a private `/storage` directory, served only via an authenticated/signed route handler — swappable for S3/R2 by replacing one `lib/storage.ts` module.
@@ -188,7 +188,7 @@ Deferred to Phase 2/3 (stubbed with clear "coming soon" or interface-only where 
 
 ## 17. Requirements I adjusted, and why
 
-1. **Database engine**: SQLite instead of PostgreSQL for local/demo (no Docker/Postgres available in this environment). Schema is Postgres-compatible; this is a one-line swap for deployment.
+1. **Database engine**: originally SQLite for local/demo (no Docker/Postgres available in that environment); switched to PostgreSQL everywhere once the app moved to Vercel, since SQLite cannot run there at all. The schema was Postgres-compatible from the start, so this was the one-line swap it was designed to be.
 2. **i18n**: lightweight custom dictionary approach instead of next-intl's locale-prefixed routing, to avoid tripling the route tree across public + 3 portals in the MVP. Same end-user capability (language switch, RTL), smaller footprint; upgrade path documented above.
 3. **Payment**: modeled fully (transactions, statuses) but the actual charge is a stub confirmation step — no real gateway credentials exist yet, and wiring one in is explicitly Phase 2 in the brief.
 4. **Meetings**: platform link is a manual field set during coordination rather than an API-generated Meet/Zoom link, since that requires OAuth credentials for a real Google/Microsoft account. The workflow, statuses and safeguarding assumption (a MyFundAction/Ufuk representative facilitates) are fully built.

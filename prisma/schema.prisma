@@ -1,15 +1,19 @@
 // MyFundAction Gaza Child Sponsorship Platform
-// Local/demo datasource is SQLite (no external DB service available in this
-// environment). The schema deliberately avoids Postgres-only features so that
-// switching `provider = "postgresql"` + DATABASE_URL is the only change
-// needed to run this in production. See ARCHITECTURE.md section 16-17.
+//
+// Postgres in every environment (local dev included) — this was SQLite
+// while the app only ran on this machine (no external DB service was
+// available in that environment), but SQLite is a file on disk and cannot
+// run on Vercel's serverless functions at all (no persistent filesystem).
+// The schema was deliberately kept free of Postgres-only features from the
+// start specifically so this swap would be a one-line change. See
+// ARCHITECTURE.md section 16-17 and README.md for setup.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

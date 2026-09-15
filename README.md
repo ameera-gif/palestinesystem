@@ -17,8 +17,8 @@ anywhere.
 ## Tech stack
 
 - Next.js 16 (App Router, Server Components + Server Actions), TypeScript, Tailwind CSS v4
-- Prisma ORM + **SQLite** for local/demo use (no Docker/Postgres required — see ARCHITECTURE.md §16–17 for the
-  production Postgres migration path, which is a one-line change)
+- Prisma ORM + **Postgres** (a free [Neon](https://neon.tech) or [Vercel Postgres](https://vercel.com/storage/postgres)
+  database works fine for both local dev and production — see "Deploying to Vercel" below)
 - Auth.js (NextAuth) v5, credentials + bcrypt
 - Local filesystem storage behind an authenticated route handler (stands in for signed S3/R2 URLs in production)
 - A small hand-built design-system component set on Tailwind tokens (no external UI kit dependency)
@@ -26,22 +26,46 @@ anywhere.
 
 ## Getting started
 
+1. Get a Postgres connection string — the fastest option is a free [Neon](https://neon.tech) database (no card
+   required), or provision Vercel Postgres from your Vercel project's Storage tab.
+2. Copy `.env.example` to `.env` and fill in `DATABASE_URL` (and generate a real `AUTH_SECRET` — see the comment
+   in the file).
+3. Run:
+
 ```bash
-npm install
-npm run db:seed     # creates prisma/dev.db, runs migrations implicitly via `prisma migrate deploy` if needed, and seeds fictional demo data
+npm install                # also runs `prisma generate` via postinstall
+npx prisma migrate deploy  # creates all tables from prisma/migrations
+npm run db:seed            # seeds fictional demo data
 npm run dev
 ```
 
 Open http://localhost:3000.
-
-> If this is a completely fresh clone (no `prisma/dev.db` yet), run `npx prisma migrate deploy` once before
-> `npm run db:seed`, or `npx prisma migrate dev` to create the SQLite database from the schema.
 
 To reset the database and reseed from scratch:
 
 ```bash
 npm run db:reset
 ```
+
+## Deploying to Vercel
+
+1. Import the GitHub repo into Vercel as a new project.
+2. In the project's **Settings → Environment Variables**, add `DATABASE_URL` (a Postgres connection string — Neon
+   or Vercel Postgres both work), `AUTH_SECRET` (a real generated secret, not the dev placeholder), and
+   `NEXTAUTH_URL` (your deployed URL, e.g. `https://your-project.vercel.app`).
+3. Deploy. The build command (`prisma migrate deploy && next build`) applies all migrations to your database
+   automatically on every deploy — no manual migration step needed once the env vars above are set.
+4. Seed demo data once, from your own machine, pointed at the production database:
+   ```bash
+   DATABASE_URL="<your production connection string>" npm run db:seed
+   ```
+   (PowerShell: `$env:DATABASE_URL="<connection string>"; npm run db:seed`)
+
+**Uploaded files (Ufuk's report photos, distribution evidence, media) currently save to local disk**
+(`src/lib/storage.ts`), which — like SQLite — does not persist on Vercel's serverless functions. Uploads will
+appear to succeed but won't be retrievable afterward. This wasn't addressed in this pass since it wasn't blocking
+the reported error; swapping in real object storage (Vercel Blob, S3, etc.) is a contained change to that one
+file whenever you're ready for it.
 
 ## Demo accounts
 
