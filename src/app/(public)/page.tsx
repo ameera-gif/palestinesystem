@@ -182,7 +182,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-      <SectionWave fromColor="var(--color-blue-light)" toColor="var(--color-surface)" flip />
+      <SectionWave fromColor="var(--color-blue-light)" toColor="var(--color-surface)" />
 
       {/* How it works — a quick preview only; the full walkthrough (with
           pricing and the meeting policy) lives on /how-it-works. */}
@@ -241,7 +241,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-      <SectionWave fromColor="var(--color-paper)" toColor="var(--color-brand)" flip />
+      <SectionWave fromColor="var(--color-paper)" toColor="var(--color-brand)" />
 
       {/* Final CTA */}
       <section className="relative overflow-hidden bg-linear-to-br from-brand to-brand-dark">
