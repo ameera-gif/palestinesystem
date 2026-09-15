@@ -1,26 +1,207 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* MyFundAction brand tokens, built from the actual logo: warm gold/amber
+     (the "My" in the wordmark) as the primary call-to-action colour, and a
+     deep warm charcoal (the "FundAction" wordmark colour) as the
+     professional/structural colour for navigation and secondary UI.
+     Deliberately restrained: no gradients, no glassmorphism. */
+  --color-paper: #fbf7ee;
+  --color-surface: #ffffff;
+  --color-ink: #241f1a;
+  --color-muted: #79705f;
+  --color-border: #e9e1cd;
+
+  /* Structural brand colour — deep warm charcoal, used for headers, active
+     nav, and secondary buttons. */
+  --color-brand: #332a1d;
+  --color-brand-dark: #1e1810;
+  --color-brand-light: #f3ecda;
+
+  /* Primary call-to-action colour — the logo's gold, darkened just enough
+     to carry white button text accessibly. */
+  --color-accent: #b3720c;
+  --color-accent-dark: #8c5906;
+  --color-accent-light: #fbedd0;
+  /* The vivid, undarkened gold from the mark itself — decorative use only
+     (logo, icons, underlines, borders) — never as a text-bearing background. */
+  --color-accent-bright: #f2971f;
+
+  /* Second brand colour — a confident azure blue, the true colour-wheel
+     complement of the logo's gold (gold sits at ~37° hue; true complement
+     is ~217°, landing here). Complements, rather than just "another warm
+     tone next to the other warm tones" — genuine contrast against the
+     gold/charcoal palette. Also happens to fit: Gaza is a Mediterranean
+     coastal strip. Used for alternating section tints, secondary badges,
+     and avatar variety. */
+  --color-blue: #1d6fa5;
+  --color-blue-dark: #154f78;
+  --color-blue-light: #e2eef6;
+
+  --color-success: #2f7a4d;
+  --color-success-light: #e6f3ea;
+  --color-warning: #9c6b12;
+  --color-warning-light: #faf1de;
+  --color-danger: #b3402f;
+  --color-danger-light: #fbe9e5;
+  --color-info: #2c6a8a;
+  --color-info-light: #e6f1f6;
+
+  /* var(--font-jakarta) is injected by next/font on <html> — if it hasn't
+     loaded yet (or on a page that somehow skips RootLayout) the stack falls
+     back gracefully to system fonts, including Arabic-capable ones for RTL. */
+  --font-sans:
+    var(--font-jakarta), "Segoe UI", ui-sans-serif, system-ui, "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-paper: var(--color-paper);
+  --color-surface: var(--color-surface);
+  --color-ink: var(--color-ink);
+  --color-muted: var(--color-muted);
+  --color-border: var(--color-border);
+  --color-brand: var(--color-brand);
+  --color-brand-dark: var(--color-brand-dark);
+  --color-brand-light: var(--color-brand-light);
+  --color-accent: var(--color-accent);
+  --color-accent-dark: var(--color-accent-dark);
+  --color-accent-light: var(--color-accent-light);
+  --color-accent-bright: var(--color-accent-bright);
+  --color-blue: var(--color-blue);
+  --color-blue-dark: var(--color-blue-dark);
+  --color-blue-light: var(--color-blue-light);
+  --color-success: var(--color-success);
+  --color-success-light: var(--color-success-light);
+  --color-warning: var(--color-warning);
+  --color-warning-light: var(--color-warning-light);
+  --color-danger: var(--color-danger);
+  --color-danger-light: var(--color-danger-light);
+  --color-info: var(--color-info);
+  --color-info-light: var(--color-info-light);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
 }
+
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+/* Entrance motion — deliberately CSS `animation`, not a JS+IntersectionObserver
+   scroll-reveal. A native CSS animation always runs and always completes on
+   its own; it can never get stuck hidden the way a JS-gated opacity state
+   can (that was tried and removed — see project history). Content is fully
+   visible without this rule ever running: unsupported browsers, crawlers,
+   print/PDF export and reduced-motion users all just see the final state
+   immediately, never a blank one. */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-fade-up {
+    animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+/* Continuous decorative motion — all purely visual (never gates content, no
+   opacity-0-until-JS anywhere), all transform/opacity only (cheap, GPU-
+   composited, no layout thrash), all paused under reduced-motion. This is
+   what makes the hero/CTA backgrounds feel alive instead of a flat static
+   gradient + silhouette. */
+
+.blob-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(64px);
+  will-change: transform;
+}
+
+@keyframes blob-drift-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(50px, 35px) scale(1.12);
+  }
+}
+@keyframes blob-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-45px, -30px) scale(1.08);
+  }
+}
+@keyframes blob-drift-c {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(25px, -35px) scale(0.92);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .blob-a {
+    animation: blob-drift-a 20s ease-in-out infinite;
+  }
+  .blob-b {
+    animation: blob-drift-b 24s ease-in-out infinite;
+  }
+  .blob-c {
+    animation: blob-drift-c 28s ease-in-out infinite;
+  }
+}
+
+/* Slow continuous rotation for the sunburst watermark. */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .animate-spin-slow {
+    animation: spin-slow 90s linear infinite;
+  }
+}
+
+/* Seamless infinite horizontal scroll for the wave motif — two copies of
+   the same SVG placed side by side, translated exactly one copy-width. */
+@keyframes wave-flow {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .animate-wave-flow {
+    animation: wave-flow 14s linear infinite;
+  }
+}
+

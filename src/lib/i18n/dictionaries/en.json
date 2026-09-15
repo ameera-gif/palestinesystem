@@ -1,0 +1,36 @@
+{
+  "nav": {
+    "home": "Home",
+    "sponsorAChild": "Sponsor a Child",
+    "howItWorks": "How Sponsorship Works",
+    "impact": "Our Impact",
+    "stories": "Stories & Updates",
+    "about": "About MyFundAction",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "login": "Sponsor Login"
+  },
+  "common": {
+    "sponsorThisChild": "Sponsor This Child",
+    "learnMore": "Learn More",
+    "readMore": "Read More",
+    "viewProfile": "View Profile",
+    "available": "Available for Sponsorship",
+    "sponsored": "Sponsored"
+  },
+  "home": {
+    "heroEyebrow": "MyFundAction · Gaza Child Sponsorship Programme",
+    "heroTitle": "Walk alongside a child in Gaza, every step of the way.",
+    "heroSubtitle": "Your monthly sponsorship is delivered and verified on the ground by our partner Ufuk, and every update is reviewed by MyFundAction before it reaches you — so you always know your support is real, safe, and reaching the right child.",
+    "heroCta": "Sponsor a Child",
+    "heroCtaSecondary": "How Sponsorship Works",
+    "trustTitle": "A relationship you can trust, at every step",
+    "trustSubtitle": "Three parties, one clear line of accountability.",
+    "howTitle": "How your sponsorship reaches a child",
+    "impactTitle": "Our programme, in numbers"
+  },
+  "footer": {
+    "tagline": "MyFundAction — humanitarian relief and development, working in Gaza through our field partner Ufuk.",
+    "rights": "All rights reserved."
+  }
+}

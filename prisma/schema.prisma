@@ -1,0 +1,635 @@
+// MyFundAction Gaza Child Sponsorship Platform
+// Local/demo datasource is SQLite (no external DB service available in this
+// environment). The schema deliberately avoids Postgres-only features so that
+// switching `provider = "postgresql"` + DATABASE_URL is the only change
+// needed to run this in production. See ARCHITECTURE.md section 16-17.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums (workflow states — mirror ARCHITECTURE.md section "workflow states")
+// ---------------------------------------------------------------------------
+
+enum Role {
+  SPONSOR
+  UFUK
+  MYFUNDACTION_PC
+  ADMIN
+}
+
+enum ChildGender {
+  MALE
+  FEMALE
+}
+
+enum ChildStatus {
+  DRAFT
+  ELIGIBLE
+  AVAILABLE
+  SPONSORED
+  ON_HOLD
+  EXITED
+}
+
+enum SponsorshipStatus {
+  PENDING
+  ACTIVE
+  PAUSED
+  PAYMENT_ISSUE
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentFrequency {
+  MONTHLY
+  QUARTERLY
+}
+
+enum TransactionStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+  REFUNDED
+}
+
+enum ReportStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  RETURNED
+  APPROVED
+  PUBLISHED
+}
+
+enum ReviewDecision {
+  APPROVED
+  RETURNED
+  MORE_INFO_REQUESTED
+  REJECTED
+}
+
+enum DistributionStatus {
+  PLANNED
+  DISTRIBUTED
+  EVIDENCE_SUBMITTED
+  UNDER_REVIEW
+  VERIFIED
+  ISSUE_FLAGGED
+}
+
+enum MediaType {
+  PHOTO
+  VIDEO
+  DOCUMENT
+}
+
+enum MediaVisibility {
+  INTERNAL
+  SPONSOR_ONLY
+  PUBLIC_APPROVED
+}
+
+enum MediaApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum MeetingStatus {
+  NOT_DUE
+  DUE
+  AWAITING_UFUK
+  COORDINATING
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+}
+
+enum MeetingPlatform {
+  GOOGLE_MEET
+  ZOOM
+  TEAMS
+  OTHER
+}
+
+enum MessageDirection {
+  SPONSOR_TO_CHILD
+  CHILD_TO_SPONSOR
+}
+
+enum MessageStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  DELIVERED
+  REJECTED
+}
+
+enum DocumentType {
+  CONSENT
+  ELIGIBILITY
+  OTHER
+}
+
+// ---------------------------------------------------------------------------
+// Identity
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role
+  locale       String   @default("en")
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sponsor Sponsor?
+  ufuk    UfukStaff?
+  pc      ProjectCoordinator?
+
+  notifications Notification[]
+  auditLogs     AuditLog[]
+
+  @@index([role])
+}
+
+model Sponsor {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName String
+  country     String?
+  phone       String?
+  createdAt   DateTime @default(now())
+
+  sponsorships Sponsorship[]
+  meetings     Meeting[]
+  messages     Message[]
+}
+
+model UfukStaff {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  title     String?
+  phone     String?
+  createdAt DateTime @default(now())
+
+  assignedChildren     Child[]             @relation("AssignedUfukStaff")
+  reportsSubmitted     Report[]            @relation("ReportSubmittedBy")
+  distributionBatches  DistributionBatch[] @relation("BatchCreatedBy")
+  mediaUploaded        Media[]             @relation("MediaUploadedBy")
+  meetingsRepresenting Meeting[]           @relation("MeetingUfukRep")
+  documentsUploaded    ChildDocument[]     @relation("DocumentUploadedBy")
+}
+
+model ProjectCoordinator {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String?
+  createdAt DateTime @default(now())
+
+  reportsReviewed       Report[]             @relation("ReportReviewedBy")
+  sponsorshipsConfirmed Sponsorship[]        @relation("SponsorshipConfirmedBy")
+  distributionsVerified DistributionRecord[] @relation("DistributionVerifiedBy")
+  mediaReviewed         Media[]              @relation("MediaReviewedBy")
+  meetingsResponsible   Meeting[]            @relation("MeetingResponsiblePc")
+}
+
+// ---------------------------------------------------------------------------
+// Child
+// ---------------------------------------------------------------------------
+
+model Child {
+  id             String      @id @default(cuid())
+  childCode      String      @unique // internal reference e.g. GZ-0001
+  slug           String      @unique // public URL slug (uses display name, not real identity)
+  displayName    String // first name / nickname shown publicly
+  fullName       String // restricted — never returned to sponsor/public mappers
+  dateOfBirth    DateTime
+  gender         ChildGender
+  region         String // coarse location only, e.g. "Gaza City" — never exact address
+  photoUrl       String?
+  bio            String? // short, dignity-first approved introduction
+  interests      String? // comma-separated tags, approved
+  aspirations    String? // approved
+  educationStage String? // approved, e.g. "Grade 5 - Primary"
+  schoolName     String? // restricted (internal)
+  status         ChildStatus @default(DRAFT)
+  registeredAt   DateTime    @default(now())
+  consentOnFile  Boolean     @default(false)
+
+  assignedUfukStaffId String?
+  assignedUfukStaff   UfukStaff? @relation("AssignedUfukStaff", fields: [assignedUfukStaffId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  guardian      Guardian?
+  documents     ChildDocument[]
+  consents      ChildConsent[]
+  statusHistory ChildStatusHistory[]
+  sponsorships  Sponsorship[]
+  reports       Report[]
+  distributions DistributionRecord[]
+  media         Media[]
+  meetings      Meeting[]
+  messages      Message[]
+
+  @@index([status])
+  @@index([assignedUfukStaffId])
+}
+
+// Restricted 1:1 — never exposed to sponsor/public API mappers.
+model Guardian {
+  id             String   @id @default(cuid())
+  childId        String   @unique
+  child          Child    @relation(fields: [childId], references: [id], onDelete: Cascade)
+  name           String
+  relationship   String
+  phone          String?
+  address        String? // full address — internal only
+  householdNotes String?
+  updatedAt      DateTime @updatedAt
+}
+
+model ChildDocument {
+  id           String       @id @default(cuid())
+  childId      String
+  child        Child        @relation(fields: [childId], references: [id], onDelete: Cascade)
+  type         DocumentType
+  title        String
+  fileUrl      String
+  notes        String?
+  uploadedById String
+  uploadedBy   UfukStaff    @relation("DocumentUploadedBy", fields: [uploadedById], references: [id])
+  uploadedAt   DateTime     @default(now())
+
+  @@index([childId])
+}
+
+model ChildConsent {
+  id          String    @id @default(cuid())
+  childId     String
+  child       Child     @relation(fields: [childId], references: [id], onDelete: Cascade)
+  consentType String // e.g. "media", "programme_participation", "meetings"
+  granted     Boolean   @default(false)
+  grantedBy   String? // guardian name / relationship, free text
+  grantedAt   DateTime?
+  notes       String?
+
+  @@index([childId])
+}
+
+model ChildStatusHistory {
+  id          String       @id @default(cuid())
+  childId     String
+  child       Child        @relation(fields: [childId], references: [id], onDelete: Cascade)
+  fromStatus  ChildStatus?
+  toStatus    ChildStatus
+  reason      String
+  changedById String
+  changedAt   DateTime     @default(now())
+
+  @@index([childId])
+}
+
+// ---------------------------------------------------------------------------
+// Sponsorship
+// ---------------------------------------------------------------------------
+
+model Sponsorship {
+  id               String            @id @default(cuid())
+  sponsorId        String
+  sponsor          Sponsor           @relation(fields: [sponsorId], references: [id])
+  childId          String
+  child            Child             @relation(fields: [childId], references: [id])
+  startDate        DateTime?
+  endDate          DateTime?
+  status           SponsorshipStatus @default(PENDING)
+  monthlyAmount    Float
+  currency         String            @default("USD")
+  paymentFrequency PaymentFrequency  @default(QUARTERLY)
+  pausedReason     String?
+  cancelledReason  String?
+
+  confirmedById String?
+  confirmedBy   ProjectCoordinator? @relation("SponsorshipConfirmedBy", fields: [confirmedById], references: [id])
+  confirmedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions SponsorshipTransaction[]
+
+  @@index([sponsorId])
+  @@index([childId])
+  @@index([status])
+}
+
+model SponsorshipTransaction {
+  id            String            @id @default(cuid())
+  sponsorshipId String
+  sponsorship   Sponsorship       @relation(fields: [sponsorshipId], references: [id], onDelete: Cascade)
+  periodLabel   String // e.g. "January 2027"
+  amount        Float
+  currency      String            @default("USD")
+  status        TransactionStatus @default(PENDING)
+  method        String            @default("stub")
+  reference     String?
+  paidAt        DateTime?
+  createdAt     DateTime          @default(now())
+
+  @@index([sponsorshipId])
+}
+
+// ---------------------------------------------------------------------------
+// Reports (Ufuk submits -> MyFundAction reviews/approves/publishes)
+// ---------------------------------------------------------------------------
+
+model Report {
+  id                   String       @id @default(cuid())
+  childId              String
+  child                Child        @relation(fields: [childId], references: [id])
+  reportingPeriodStart DateTime
+  reportingPeriodEnd   DateTime
+  status               ReportStatus @default(DRAFT)
+
+  // Academic
+  schoolYear          String?
+  attendanceSummary   String?
+  academicProgress    String?
+  subjectProgress     String?
+  achievements        String?
+  areasForImprovement String?
+
+  // General development
+  participationNotes      String?
+  interestsUpdate         String?
+  generalDevelopmentNotes String?
+
+  // Narrative
+  narrativeUpdate String?
+  challenges      String?
+  currentNeeds    String?
+  nextSteps       String?
+  guardianRemarks String?
+
+  submittedByUfukId String?
+  submittedByUfuk   UfukStaff? @relation("ReportSubmittedBy", fields: [submittedByUfukId], references: [id])
+  submittedAt       DateTime?
+
+  reviewedByPcId       String?
+  reviewedByPc         ProjectCoordinator? @relation("ReportReviewedBy", fields: [reviewedByPcId], references: [id])
+  reviewedAt           DateTime?
+  approvedAt           DateTime?
+  publishedAt          DateTime?
+  currentReviewComment String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviews ReportReview[]
+  media   Media[]
+
+  @@index([childId])
+  @@index([status])
+}
+
+model ReportReview {
+  id           String         @id @default(cuid())
+  reportId     String
+  report       Report         @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  decision     ReviewDecision
+  comment      String?
+  reviewedById String
+  reviewedAt   DateTime       @default(now())
+
+  @@index([reportId])
+}
+
+// ---------------------------------------------------------------------------
+// Distribution (support delivery — quarterly by default, configurable)
+// ---------------------------------------------------------------------------
+
+model DistributionBatch {
+  id              String    @id @default(cuid())
+  label           String // e.g. "Q1 2027"
+  periodStart     DateTime
+  periodEnd       DateTime
+  notes           String?
+  createdByUfukId String
+  createdByUfuk   UfukStaff @relation("BatchCreatedBy", fields: [createdByUfukId], references: [id])
+  createdAt       DateTime  @default(now())
+
+  records DistributionRecord[]
+}
+
+model DistributionRecord {
+  id               String             @id @default(cuid())
+  batchId          String
+  batch            DistributionBatch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  childId          String
+  child            Child              @relation(fields: [childId], references: [id])
+  expectedAmount   Float
+  actualAmount     Float?
+  currency         String             @default("USD")
+  distributionDate DateTime?
+  method           String?
+  recipientNote    String? // e.g. "Guardian" — descriptive only, no identity duplication
+  status           DistributionStatus @default(PLANNED)
+  notes            String?
+  issueNotes       String?
+
+  verifiedByPcId String?
+  verifiedByPc   ProjectCoordinator? @relation("DistributionVerifiedBy", fields: [verifiedByPcId], references: [id])
+  verifiedAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  evidence DistributionEvidence[]
+  media    Media[]
+
+  @@index([batchId])
+  @@index([childId])
+  @@index([status])
+}
+
+model DistributionEvidence {
+  id                   String             @id @default(cuid())
+  distributionRecordId String
+  distributionRecord   DistributionRecord @relation(fields: [distributionRecordId], references: [id], onDelete: Cascade)
+  fileUrl              String
+  fileType             MediaType
+  description          String?
+  uploadedById         String
+  uploadedAt           DateTime           @default(now())
+
+  @@index([distributionRecordId])
+}
+
+// ---------------------------------------------------------------------------
+// Media
+// ---------------------------------------------------------------------------
+
+model Media {
+  id                   String    @id @default(cuid())
+  childId              String
+  child                Child     @relation(fields: [childId], references: [id])
+  type                 MediaType
+  fileUrl              String
+  thumbnailUrl         String?
+  description          String?
+  reportingPeriodLabel String?
+
+  relatedReportId       String?
+  relatedReport         Report?             @relation(fields: [relatedReportId], references: [id])
+  relatedDistributionId String?
+  relatedDistribution   DistributionRecord? @relation(fields: [relatedDistributionId], references: [id])
+
+  uploadedById String
+  uploadedBy   UfukStaff @relation("MediaUploadedBy", fields: [uploadedById], references: [id])
+  uploadedAt   DateTime  @default(now())
+
+  consentConfirmed Boolean             @default(false)
+  purpose          String?
+  visibility       MediaVisibility     @default(INTERNAL)
+  approvalStatus   MediaApprovalStatus @default(PENDING)
+
+  reviewedById  String?
+  reviewedByPc  ProjectCoordinator? @relation("MediaReviewedBy", fields: [reviewedById], references: [id])
+  reviewedAt    DateTime?
+  reviewComment String?
+
+  @@index([childId])
+  @@index([visibility, approvalStatus])
+}
+
+// ---------------------------------------------------------------------------
+// Meetings
+// ---------------------------------------------------------------------------
+
+model Meeting {
+  id         String        @id @default(cuid())
+  childId    String
+  child      Child         @relation(fields: [childId], references: [id])
+  sponsorId  String
+  sponsor    Sponsor       @relation(fields: [sponsorId], references: [id])
+  cycleLabel String // e.g. "2027 H1"
+  status     MeetingStatus @default(NOT_DUE)
+
+  scheduledDate DateTime?
+  timezone      String?
+  platform      MeetingPlatform?
+  meetingLink   String?
+
+  responsiblePcId String?
+  responsiblePc   ProjectCoordinator? @relation("MeetingResponsiblePc", fields: [responsiblePcId], references: [id])
+  ufukRepId       String?
+  ufukRep         UfukStaff?          @relation("MeetingUfukRep", fields: [ufukRepId], references: [id])
+
+  internalNotes       String?
+  sponsorVisibleNotes String?
+  cancelledReason     String?
+  completedAt         DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([childId])
+  @@index([sponsorId])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// Moderated sponsor <-> child messages
+// ---------------------------------------------------------------------------
+
+model Message {
+  id        String           @id @default(cuid())
+  sponsorId String
+  sponsor   Sponsor          @relation(fields: [sponsorId], references: [id])
+  childId   String
+  child     Child            @relation(fields: [childId], references: [id])
+  direction MessageDirection
+  occasion  String? // e.g. "Eid", "Ramadan", "Encouragement"
+  content   String
+  status    MessageStatus    @default(SUBMITTED)
+
+  submittedAt   DateTime  @default(now())
+  reviewedById  String?
+  reviewedAt    DateTime?
+  reviewComment String?
+  deliveredAt   DateTime?
+
+  @@index([sponsorId])
+  @@index([childId])
+}
+
+// ---------------------------------------------------------------------------
+// Notifications / Audit / Settings
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      String
+  body       String
+  entityType String?
+  entityId   String?
+  link       String?
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([userId, isRead])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actor      User?    @relation(fields: [actorId], references: [id])
+  action     String // e.g. "CHILD_STATUS_CHANGED", "REPORT_APPROVED"
+  entityType String
+  entityId   String
+  summary    String
+  metadata   String? // JSON-encoded extra detail
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+model ProgrammeSetting {
+  id          String  @id @default(cuid())
+  key         String  @unique
+  value       String
+  description String?
+}
+
+// Curated public editorial content for "Stories & Updates"
+model Story {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  excerpt       String
+  body          String
+  coverImageUrl String?
+  childId       String?
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+}

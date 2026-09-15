@@ -1,0 +1,36 @@
+{
+  "nav": {
+    "home": "Laman Utama",
+    "sponsorAChild": "Tajaan Seorang Kanak-Kanak",
+    "howItWorks": "Cara Tajaan Berfungsi",
+    "impact": "Impak Kami",
+    "stories": "Kisah & Perkembangan",
+    "about": "Tentang MyFundAction",
+    "faq": "Soalan Lazim",
+    "contact": "Hubungi Kami",
+    "login": "Log Masuk Penaja"
+  },
+  "common": {
+    "sponsorThisChild": "Tajakan Kanak-Kanak Ini",
+    "learnMore": "Ketahui Lebih Lanjut",
+    "readMore": "Baca Lagi",
+    "viewProfile": "Lihat Profil",
+    "available": "Tersedia untuk Ditaja",
+    "sponsored": "Sudah Ditaja"
+  },
+  "home": {
+    "heroEyebrow": "MyFundAction · Program Tajaan Kanak-Kanak Gaza",
+    "heroTitle": "Bersama seorang kanak-kanak di Gaza, di setiap langkah.",
+    "heroSubtitle": "Tajaan bulanan anda disalurkan dan disahkan di lapangan oleh rakan kongsi kami, Ufuk, dan setiap kemas kini disemak oleh MyFundAction sebelum sampai kepada anda — jadi anda sentiasa yakin sumbangan anda telus dan sampai kepada kanak-kanak yang tepat.",
+    "heroCta": "Tajakan Seorang Kanak-Kanak",
+    "heroCtaSecondary": "Cara Tajaan Berfungsi",
+    "trustTitle": "Hubungan yang boleh dipercayai, di setiap peringkat",
+    "trustSubtitle": "Tiga pihak, satu garis akauntabiliti yang jelas.",
+    "howTitle": "Bagaimana tajaan anda sampai kepada kanak-kanak",
+    "impactTitle": "Program kami, dalam angka"
+  },
+  "footer": {
+    "tagline": "MyFundAction — bantuan kemanusiaan dan pembangunan, beroperasi di Gaza melalui rakan kongsi lapangan kami, Ufuk.",
+    "rights": "Hak cipta terpelihara."
+  }
+}

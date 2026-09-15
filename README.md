@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MyFundAction — Gaza Child Sponsorship Platform
 
-## Getting Started
+A child sponsorship platform for MyFundAction's Gaza programme: a public sponsorship website plus a secure
+three-role portal (Sponsor, Ufuk field team, MyFundAction Project Coordinator) and an Admin area, built around the
+core workflow:
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+Ufuk updates → Ufuk submits → MyFundAction reviews → MyFundAction approves/publishes → Sponsor receives update
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full architecture proposal (sitemaps, role-permission matrix,
+database design, privacy/safeguarding controls, and the scoping decisions made for this build).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+All data in this project is **fictional demo data** — no real child, sponsor, or field-partner information is used
+anywhere.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tech stack
 
-## Learn More
+- Next.js 16 (App Router, Server Components + Server Actions), TypeScript, Tailwind CSS v4
+- Prisma ORM + **SQLite** for local/demo use (no Docker/Postgres required — see ARCHITECTURE.md §16–17 for the
+  production Postgres migration path, which is a one-line change)
+- Auth.js (NextAuth) v5, credentials + bcrypt
+- Local filesystem storage behind an authenticated route handler (stands in for signed S3/R2 URLs in production)
+- A small hand-built design-system component set on Tailwind tokens (no external UI kit dependency)
+- Lightweight custom i18n (English fully localized; Malay/Arabic scaffolded with RTL support) — see `src/lib/i18n`
 
-To learn more about Next.js, take a look at the following resources:
+## Getting started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+npm run db:seed     # creates prisma/dev.db, runs migrations implicitly via `prisma migrate deploy` if needed, and seeds fictional demo data
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open http://localhost:3000.
 
-## Deploy on Vercel
+> If this is a completely fresh clone (no `prisma/dev.db` yet), run `npx prisma migrate deploy` once before
+> `npm run db:seed`, or `npx prisma migrate dev` to create the SQLite database from the schema.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To reset the database and reseed from scratch:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run db:reset
+```
+
+## Demo accounts
+
+All demo accounts share the password `Passw0rd!`.
+
+| Role | Email |
+|---|---|
+| Sponsor | `sponsor.amira@example.com` |
+| Sponsor | `sponsor.james@example.com` |
+| Ufuk field team | `yusuf.alamin@ufuk-partner.org` |
+| MyFundAction PC | `nadia.suleiman@myfundaction.org` |
+| MyFundAction PC | `farid.rahman@myfundaction.org` |
+| Admin | `admin@myfundaction.org` |
+
+Sign in at `/login` — each role lands on its own portal home automatically.
+
+## Where things live
+
+```
+src/app/(public)/        Public marketing + sponsorship site (home, directory, child profile, how-it-works, etc.)
+src/app/portal/          Sponsor portal
+src/app/implementer/     Ufuk field portal
+src/app/management/      MyFundAction Project Coordinator portal (incl. the Review Centre)
+src/app/admin/           Admin (users/roles, programme settings)
+src/app/api/             NextAuth route, authenticated file serving, upload endpoint
+
+src/lib/services/        Domain logic — sponsorship lifecycle, report workflow, distribution workflow,
+                          media approval, meetings, messages, notifications, audit log
+src/lib/mappers/child.ts Privacy boundary — the only sanctioned way to turn a Child row into public/sponsor-facing data
+src/lib/rbac.ts           Server-side role guards (requireRole/requireSession) used by every action & route handler
+src/middleware.ts         Route-group gate (redirects unauthenticated/wrong-role users)
+src/components/ui/        Shared design-system primitives
+prisma/schema.prisma      Full data model
+prisma/seed.ts            Fictional demo data generator
+```
+
+## Key workflows implemented
+
+- **Report review**: Ufuk drafts → submits → MyFundAction approves/returns → MyFundAction publishes → sponsor sees it.
+  Sponsors never see anything but `PUBLISHED` reports.
+- **Distribution**: Ufuk creates a batch (e.g. "Q1 2026") covering many children at once → records delivery →
+  attaches evidence → MyFundAction verifies → sponsor sees a plain-language "Support Update."
+- **Media**: Ufuk uploads with a requested visibility → MyFundAction approves (and sets final visibility:
+  Internal / Sponsor Only / Public Approved).
+- **Sponsorship matching**: sponsor requests a child (stub payment) → request queues in the Review Centre →
+  MyFundAction confirms → child flips to Sponsored. Guards against double-booking an available child.
+- **Meetings**: MyFundAction requests Ufuk's availability → Ufuk confirms → MyFundAction schedules (manual
+  Meet/Zoom/Teams link) → sponsor is notified. No sponsor-initiated meeting creation, per the safeguarding
+  requirement that a representative always facilitates.
+- **Moderated messages**: sponsor writes a greeting → MyFundAction moderates → delivered. No direct sponsor-child
+  messaging.
+- **Audit log**: every review decision, status change, and approval is recorded (`src/lib/services/audit.ts`).
+
+## Known limitations (by design, for this build)
+
+See ARCHITECTURE.md §17 for the full reasoning. In short: SQLite instead of Postgres (no local DB service
+available), a stub payment confirmation instead of a real gateway, a manual meeting-link field instead of live
+Google Meet/Zoom API integration, and partial (not full-page) Malay/Arabic translation coverage. All of these are
+called out as Phase 2 items in the original brief.
