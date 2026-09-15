@@ -37,7 +37,7 @@ export default async function HomePage() {
           <LogoMark size={440} monochrome="#D9CBB6" />
         </div>
 
-        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 py-24 sm:py-36 text-center">
+        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 pt-20 sm:pt-28 pb-16 sm:pb-24 text-center">
           <p className="animate-fade-up text-sm font-semibold text-sand uppercase tracking-wide">{dict.home.heroEyebrow}</p>
 
           <h1 className="mt-5 font-display text-5xl sm:text-7xl font-semibold text-white leading-[1.02] tracking-tight">
