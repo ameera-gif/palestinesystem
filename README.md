@@ -61,6 +61,20 @@ npm run db:reset
    ```
    (PowerShell: `$env:DATABASE_URL="<connection string>"; npm run db:seed`)
 
+**"Redeploy" redeploys that exact commit, not necessarily the latest one.** If you click **⋯ → Redeploy** from an
+older deployment in the list, Vercel rebuilds *that deployment's* commit — pushing new code afterward does not
+retroactively change what it built. If a fix doesn't seem to take effect after redeploying, check the build log's
+`Cloning ... (Commit: ...)` line against `git log` locally to confirm you're actually redeploying the latest
+commit, not an old one. The reliable way to deploy the latest code is a fresh `git push` to `main`, which
+triggers a new deployment from the current branch tip automatically.
+
+**Middleware and the Edge Function size limit.** `middleware.ts` runs on Vercel's Edge Runtime (1MB bundle
+limit). Anything it imports — even transitively — counts against that limit. In particular, never let
+`middleware.ts` (directly or via another module it imports) pull in `src/auth.ts`, since that wires up the
+Credentials provider and drags in Prisma Client + bcrypt, which alone exceed 1MB. Middleware should only ever
+import from `src/auth.config.ts` (the provider-free session/JWT config) and `src/lib/role-routes.ts` — see the
+comments in those files.
+
 **Uploaded files (Ufuk's report photos, distribution evidence, media) currently save to local disk**
 (`src/lib/storage.ts`), which — like SQLite — does not persist on Vercel's serverless functions. Uploads will
 appear to succeed but won't be retrievable afterward. This wasn't addressed in this pass since it wasn't blocking
