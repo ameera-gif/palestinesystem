@@ -6,6 +6,7 @@ import { ChildCard } from "@/components/public/child-card";
 import { LogoMark } from "@/components/brand/logo-mark";
 import { WaveMotif } from "@/components/brand/wave-motif";
 import { BlobBackground } from "@/components/brand/blob-background";
+import { SectionWave } from "@/components/brand/section-wave";
 import { AnimatedNumber } from "@/components/motion/animated-number";
 import { getDictionaryForRequest } from "@/lib/i18n";
 
@@ -151,6 +152,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      <SectionWave fromColor="var(--color-brand-dark)" toColor="var(--color-blue-light)" />
 
       {/* Trust / relationship explainer — pale blue tint breaks up the
           cream/charcoal-only rhythm the rest of the page uses. */}
@@ -159,7 +161,7 @@ export default async function HomePage() {
           <WaveMotif size={220} color="#1D6FA5" animated />
         </div>
         <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-20">
-          <div className="max-w-2xl">
+          <div className="animate-on-scroll max-w-2xl">
             <h2 className="font-display text-2xl sm:text-4xl font-semibold text-ink tracking-tight">{dict.home.trustTitle}</h2>
             <p className="mt-2 text-muted">{dict.home.trustSubtitle}</p>
           </div>
@@ -167,8 +169,8 @@ export default async function HomePage() {
             {TRUST_CARDS.map((p, i) => (
               <Card
                 key={p.label}
-                className={`animate-fade-up p-6 relative border-t-4 ${p.border} h-full transition-all duration-200 hover:-translate-y-1 hover:shadow-lg`}
-                style={{ animationDelay: `${i * 100}ms` }}
+                className={`animate-on-scroll p-6 relative border-t-4 ${p.border} h-full transition-all duration-200 hover:-translate-y-1 hover:shadow-lg`}
+                style={{ animationDelay: `${i * 80}ms` }}
               >
                 <span className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${p.badge} text-white text-sm font-semibold`}>
                   {i + 1}
@@ -180,19 +182,20 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      <SectionWave fromColor="var(--color-blue-light)" toColor="var(--color-surface)" flip />
 
       {/* How it works — a quick preview only; the full walkthrough (with
           pricing and the meeting policy) lives on /how-it-works. */}
-      <section className="bg-surface border-y border-border">
+      <section className="bg-surface">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-20">
-          <div className="flex flex-wrap items-end justify-between gap-4">
+          <div className="animate-on-scroll flex flex-wrap items-end justify-between gap-4">
             <h2 className="font-display text-2xl sm:text-4xl font-semibold text-ink tracking-tight">{dict.home.howTitle}</h2>
             <Button href="/how-it-works" variant="outline">
               See the full walkthrough
             </Button>
           </div>
 
-          <div className="mt-10 flex flex-wrap items-center gap-x-3 gap-y-4">
+          <div className="animate-on-scroll mt-10 flex flex-wrap items-center gap-x-3 gap-y-4">
             {stepPreview.map((label, i) => (
               <div key={label} className="flex items-center gap-3">
                 <div className="flex items-center gap-2.5 rounded-full border border-border bg-paper px-4 py-2">
@@ -215,26 +218,30 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      <SectionWave fromColor="var(--color-surface)" toColor="var(--color-paper)" />
 
       {/* Featured children */}
-      <section className="mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-20">
-        <div className="flex items-end justify-between gap-4 flex-wrap">
-          <div>
-            <h2 className="font-display text-2xl sm:text-4xl font-semibold text-ink tracking-tight">Children waiting for a sponsor</h2>
-            <p className="mt-2 text-muted">Every profile below has been reviewed and approved by MyFundAction.</p>
-          </div>
-          <Button href="/sponsor-a-child" variant="outline">
-            View all children
-          </Button>
-        </div>
-        <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredChildren.map((child, i) => (
-            <div key={child.id} className="animate-fade-up" style={{ animationDelay: `${i * 100}ms` }}>
-              <ChildCard child={toPublicChildCard(child)} />
+      <section className="bg-paper">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-16 sm:py-20">
+          <div className="animate-on-scroll flex items-end justify-between gap-4 flex-wrap">
+            <div>
+              <h2 className="font-display text-2xl sm:text-4xl font-semibold text-ink tracking-tight">Children waiting for a sponsor</h2>
+              <p className="mt-2 text-muted">Every profile below has been reviewed and approved by MyFundAction.</p>
             </div>
-          ))}
+            <Button href="/sponsor-a-child" variant="outline">
+              View all children
+            </Button>
+          </div>
+          <div className="mt-8 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredChildren.map((child, i) => (
+              <div key={child.id} className="animate-on-scroll" style={{ animationDelay: `${i * 80}ms` }}>
+                <ChildCard child={toPublicChildCard(child)} />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
+      <SectionWave fromColor="var(--color-paper)" toColor="var(--color-brand)" flip />
 
       {/* Final CTA */}
       <section className="relative overflow-hidden bg-linear-to-br from-brand to-brand-dark">
@@ -245,7 +252,7 @@ export default async function HomePage() {
         <div className="pointer-events-none absolute right-8 top-8 opacity-25 hidden sm:block">
           <WaveMotif size={180} color="#5FA8D3" animated />
         </div>
-        <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-16 text-center">
+        <div className="animate-on-scroll relative mx-auto max-w-6xl px-4 sm:px-6 py-16 text-center">
           <h2 className="font-display text-2xl sm:text-4xl font-semibold text-white tracking-tight">Ready to sponsor a child in Gaza?</h2>
           <p className="mt-3 text-white/75 max-w-xl mx-auto">
             Every sponsorship is verified, reported on, and reviewed — so your support reaches the child it's meant for.
@@ -255,6 +262,7 @@ export default async function HomePage() {
           </Button>
         </div>
       </section>
+      <SectionWave fromColor="var(--color-brand-dark)" toColor="var(--color-surface)" />
     </>
   );
 }

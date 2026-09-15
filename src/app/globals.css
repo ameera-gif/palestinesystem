@@ -117,6 +117,50 @@ body {
   }
 }
 
+/* Scroll-tied motion — genuinely driven by scroll position (CSS scroll-driven
+   animations, `animation-timeline: view()`), not a one-shot on-load fade.
+   This is what "the JS reveal I removed earlier" was trying to do, done the
+   way that's actually safe: no JS, no hidden-until-observer state. The
+   `.animate-on-scroll` class has NO effect at all outside the @supports
+   block below, so on any browser without support (or with reduced-motion
+   on) the element just renders normally, fully visible, every time — the
+   animation can only ever be additive, never something content depends on
+   to become visible. */
+@keyframes scroll-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-on-scroll {
+      animation: scroll-fade-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+  }
+}
+
+/* Belt-and-suspenders: print/PDF export has no real "scroll position" for
+   the timeline above to resolve against, and that's exactly the kind of
+   edge case that bit the JS scroll-reveal this replaced (verified safe for
+   actual scrolling — see project history — but printing is a different
+   rendering path, untested by that verification). Force full visibility
+   there regardless of whatever the animation would otherwise compute. */
+@media print {
+  .animate-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
 /* Continuous decorative motion — all purely visual (never gates content, no
    opacity-0-until-JS anywhere), all transform/opacity only (cheap, GPU-
    composited, no layout thrash), all paused under reduced-motion. This is
