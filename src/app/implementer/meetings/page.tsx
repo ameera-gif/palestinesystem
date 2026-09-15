@@ -16,7 +16,7 @@ export default async function UfukMeetingsPage() {
     <div>
       <h1 className="text-2xl font-semibold text-ink mb-1">Sponsor Meetings</h1>
       <p className="text-sm text-muted mb-6">
-        Confirm a child's availability when MyFundAction requests it. A MyFundAction or Ufuk representative always
+        Confirm a child&rsquo;s availability when MyFundAction requests it. A MyFundAction or field partner representative always
         facilitates the meeting.
       </p>
 

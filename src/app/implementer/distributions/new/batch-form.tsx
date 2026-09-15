@@ -5,7 +5,7 @@ import { Field, Input } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { createBatchAction, type BatchFormState } from "./actions";
 
-export function BatchForm({ children }: { children: { id: string; displayName: string; childCode: string }[] }) {
+export function BatchForm({ childOptions }: { childOptions: { id: string; displayName: string; childCode: string }[] }) {
   const [state, formAction, isPending] = useActionState<BatchFormState, FormData>(createBatchAction, null);
 
   return (
@@ -25,7 +25,7 @@ export function BatchForm({ children }: { children: { id: string; displayName: s
       <div>
         <p className="text-sm font-medium text-ink mb-2">Select children for this batch</p>
         <div className="rounded-lg border border-border max-h-80 overflow-y-auto divide-y divide-border">
-          {children.map((c) => (
+          {childOptions.map((c) => (
             <label key={c.id} className="flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-brand-light/30 cursor-pointer">
               <input type="checkbox" name="childIds" value={c.id} className="h-4 w-4" />
               <span className="text-ink">{c.displayName}</span>

@@ -17,8 +17,8 @@ export default async function SponsorMeetingsPage() {
     <div>
       <h1 className="text-2xl font-semibold text-ink mb-1">Meetings</h1>
       <p className="text-sm text-muted mb-6">
-        Sponsor-child meetings happen roughly every six months and are always facilitated by a MyFundAction or Ufuk
-        representative.
+        Sponsor-child meetings happen roughly every six months and are always facilitated by a MyFundAction or field
+        partner representative.
       </p>
 
       {meetings.length === 0 ? (

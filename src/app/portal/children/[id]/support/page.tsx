@@ -14,18 +14,24 @@ export default async function SponsorChildSupportPage({ params }: { params: Prom
   const session = await auth();
   const sponsorship = await getSponsorChildOrNotFound(session!.user.profileId!, id);
 
-  const records = await prisma.distributionRecord.findMany({
-    where: { childId: id, status: "VERIFIED" },
-    include: { batch: true, evidence: true },
-    orderBy: { verifiedAt: "desc" },
-  });
+  // Skip for a PENDING match — see the same note in the reports tab.
+  const records =
+    sponsorship.status === "PENDING"
+      ? []
+      : await prisma.distributionRecord.findMany({
+          where: { childId: id, status: "VERIFIED" },
+          include: { batch: true, evidence: true },
+          orderBy: { verifiedAt: "desc" },
+        });
 
   return (
     <div>
       <h1 className="text-2xl font-semibold text-ink mb-1">{sponsorship.child.displayName}</h1>
       <ChildTabs childId={id} />
 
-      {records.length === 0 ? (
+      {sponsorship.status === "PENDING" ? (
+        <EmptyState title="Sponsorship not yet active" description="Support updates will appear here once MyFundAction confirms your match." />
+      ) : records.length === 0 ? (
         <EmptyState title="No verified support updates yet" description="Support updates appear here once MyFundAction verifies delivery." />
       ) : (
         <div className="space-y-4">

@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { getDictionaryForRequest } from "@/lib/i18n";
+import { getProgrammeSettings } from "@/lib/settings";
 
 export async function SiteFooter() {
-  const { dict } = await getDictionaryForRequest();
+  const [{ dict }, settings] = await Promise.all([getDictionaryForRequest(), getProgrammeSettings()]);
 
   const columns = [
     {
@@ -36,7 +37,12 @@ export async function SiteFooter() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
         <div className="col-span-2">
           <Logo size={32} />
-          <p className="text-sm text-muted mt-3 max-w-xs">{dict.footer.tagline}</p>
+          <p className="text-sm text-muted mt-3 max-w-xs">{settings.footerTagline}</p>
+          <address className="text-xs text-muted mt-4 not-italic leading-relaxed max-w-xs whitespace-pre-line">
+            {settings.orgAddress}
+            <br />
+            T: {settings.orgPhone}
+          </address>
         </div>
         {columns.map((col) => (
           <div key={col.title}>
@@ -56,7 +62,7 @@ export async function SiteFooter() {
       <div className="border-t border-border">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-4 text-xs text-muted flex flex-wrap gap-2 justify-between">
           <span>© {new Date().getFullYear()} MyFundAction. {dict.footer.rights}</span>
-          <span>Implemented in the field by our partner Ufuk.</span>
+          <span>Implemented in the field by our partner.</span>
         </div>
       </div>
     </footer>

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { Card } from "@/components/ui/card";
 
-export const metadata = { title: "Our Impact — MyFundAction" };
+export const metadata = { title: "Our Impact | MyFundAction" };
 
 export default async function ImpactPage() {
   const [sponsoredCount, reportsPublished, verifiedDistributions, activeSponsors] = await Promise.all([
@@ -22,7 +22,7 @@ export default async function ImpactPage() {
     <div className="mx-auto max-w-5xl px-4 sm:px-6 py-12 sm:py-16">
       <h1 className="font-display text-3xl sm:text-5xl font-semibold text-ink tracking-tight">Our Impact</h1>
       <p className="mt-3 text-muted max-w-2xl">
-        Aggregate, non-identifying figures from the Gaza child sponsorship programme — every underlying report and
+        Aggregate, non-identifying figures from the Gaza child sponsorship programme. Every underlying report and
         delivery has been individually reviewed and verified by MyFundAction.
       </p>
 
@@ -37,9 +37,9 @@ export default async function ImpactPage() {
 
       <div className="mt-12 prose-sm text-sm text-ink max-w-2xl space-y-4">
         <p>
-          Every number above traces back to an individually reviewed record: a report Ufuk submitted and MyFundAction
-          approved, or a support delivery Ufuk documented and MyFundAction verified. We don't publish impact figures
-          we haven't personally checked.
+          Every number above traces back to an individually reviewed record: a report our partner submitted and MyFundAction
+          approved, or a support delivery our partner documented and MyFundAction verified. We don&rsquo;t publish impact figures
+          we haven&rsquo;t personally checked.
         </p>
       </div>
     </div>

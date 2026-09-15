@@ -37,13 +37,13 @@ export default async function ConfirmSponsorshipPage({ params }: { params: Promi
           </div>
           <div className="rounded-lg bg-brand-light px-4 py-3 text-sm text-ink">
             <p>
-              <span className="font-semibold">{formatMoney(settings.monthlySponsorshipAmount, settings.currency)}</span> per month
-              — billed as <span className="font-semibold">{formatMoney(amount, settings.currency)}</span> every{" "}
+              <span className="font-semibold">{formatMoney(settings.monthlySponsorshipAmount, settings.currency)}</span> per month,
+              billed as <span className="font-semibold">{formatMoney(amount, settings.currency)}</span> every{" "}
               {settings.distributionFrequencyMonths} months.
             </p>
           </div>
           <p className="text-xs text-muted">
-            This demo uses a stub payment confirmation — no real charge is made. In production this step would hand
+            This demo uses a stub payment confirmation. No real charge is made. In production this step would hand
             off to a payment gateway (Phase 2).
           </p>
           <ConfirmSponsorshipButton childId={child.id} />

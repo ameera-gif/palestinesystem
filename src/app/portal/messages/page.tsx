@@ -20,7 +20,7 @@ export default async function SponsorMessagesPage() {
       <div>
         <h1 className="text-2xl font-semibold text-ink mb-1">Messages</h1>
         <p className="text-sm text-muted mb-6">
-          Send a moderated greeting — MyFundAction reviews every message before Ufuk delivers it, and any reply is
+          Send a moderated greeting. MyFundAction reviews every message before our partner delivers it, and any reply is
           reviewed the same way before it reaches you.
         </p>
 
@@ -55,7 +55,7 @@ export default async function SponsorMessagesPage() {
           {sponsorships.length === 0 ? (
             <p className="text-sm text-muted">You need an active sponsorship to send a message.</p>
           ) : (
-            <MessageForm children={sponsorships.map((s) => ({ id: s.childId, displayName: s.child.displayName }))} />
+            <MessageForm childOptions={sponsorships.map((s) => ({ id: s.childId, displayName: s.child.displayName }))} />
           )}
         </CardContent>
       </Card>

@@ -43,7 +43,7 @@ export default async function UfukMediaPage() {
           <CardTitle>Upload media</CardTitle>
         </CardHeader>
         <CardContent>
-          <MediaUploadForm children={children} />
+          <MediaUploadForm childOptions={children} />
         </CardContent>
       </Card>
     </div>

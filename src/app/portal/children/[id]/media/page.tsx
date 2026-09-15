@@ -11,23 +11,29 @@ export default async function SponsorChildMediaPage({ params }: { params: Promis
   const sponsorship = await getSponsorChildOrNotFound(session!.user.profileId!, id);
 
   // Sponsor sees SPONSOR_ONLY and PUBLIC_APPROVED media, only once approved —
-  // never INTERNAL or still-PENDING items.
-  const media = await prisma.media.findMany({
-    where: {
-      childId: id,
-      approvalStatus: "APPROVED",
-      visibility: { in: ["SPONSOR_ONLY", "PUBLIC_APPROVED"] },
-    },
-    orderBy: { uploadedAt: "desc" },
-  });
+  // never INTERNAL or still-PENDING items. Skipped entirely for a PENDING
+  // match — see the same note in the reports tab.
+  const media =
+    sponsorship.status === "PENDING"
+      ? []
+      : await prisma.media.findMany({
+          where: {
+            childId: id,
+            approvalStatus: "APPROVED",
+            visibility: { in: ["SPONSOR_ONLY", "PUBLIC_APPROVED"] },
+          },
+          orderBy: { uploadedAt: "desc" },
+        });
 
   return (
     <div>
       <h1 className="text-2xl font-semibold text-ink mb-1">{sponsorship.child.displayName}</h1>
       <ChildTabs childId={id} />
 
-      {media.length === 0 ? (
-        <EmptyState title="No approved photos or videos yet" description="Approved updates from Ufuk will appear here once MyFundAction reviews them." />
+      {sponsorship.status === "PENDING" ? (
+        <EmptyState title="Sponsorship not yet active" description="Photos and videos will appear here once MyFundAction confirms your match." />
+      ) : media.length === 0 ? (
+        <EmptyState title="No approved photos or videos yet" description="Approved updates from our partner will appear here once MyFundAction reviews them." />
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {media.map((m) => (

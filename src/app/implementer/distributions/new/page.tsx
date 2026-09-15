@@ -17,7 +17,7 @@ export default async function NewDistributionBatchPage() {
       </p>
       <Card>
         <CardContent className="pt-6">
-          <BatchForm children={children} />
+          <BatchForm childOptions={children} />
         </CardContent>
       </Card>
     </div>

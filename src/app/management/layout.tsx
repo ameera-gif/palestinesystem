@@ -23,7 +23,7 @@ export default async function ManagementLayout({ children }: { children: React.R
         { href: "/management/sponsorships", label: "Sponsorships" },
         { href: "/management/meetings", label: "Meetings" },
         { href: "/management/analytics", label: "Analytics" },
-        { href: "/management/team", label: "Ufuk Team" },
+        { href: "/management/team", label: "Field Team" },
         { href: "/management/settings", label: "Programme Settings" },
         { href: "/management/notifications", label: "Notifications", badge: unreadCount || undefined },
       ]}

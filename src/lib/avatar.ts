@@ -8,20 +8,21 @@
 // pattern, used here at low opacity as texture, not appropriation of a
 // specific regional/family design.
 
-// Warm gold and its true colour-wheel complement, a cool blue, paired
-// across the diagonal — the two real brand colours (see globals.css),
-// combined for genuine contrast instead of a flat single fill or two warm
-// tones sitting next to each other. Every pair is intentionally legible
-// with white text on top.
+// Primary dark green and warm sand, the two dominant structural colours
+// (see globals.css), paired across the diagonal for genuine contrast
+// instead of a flat single fill. The muted Palestinian red appears in only
+// one of eight pairs — an identity accent, not a flood of flag colours.
+// Every pair stays mid-to-dark throughout so white initials/labels stay
+// legible on top.
 const GRADIENT_PAIRS: [string, string][] = [
-  ["#C97F0F", "#1D6FA5"], // gold -> blue
-  ["#1D6FA5", "#332A1D"], // blue -> charcoal
-  ["#B3720C", "#154F78"], // gold -> deep blue
-  ["#8C5906", "#1D6FA5"], // deep gold -> blue
-  ["#332A1D", "#C97F0F"], // charcoal -> gold
-  ["#154F78", "#D9920F"], // deep blue -> bright gold
-  ["#5C4A2A", "#2E7FB0"], // warm brown -> lighter blue
-  ["#9C6B12", "#123F5C"], // amber -> deep navy
+  ["#203A30", "#A68F6C"], // dark green -> sand-dark
+  ["#101A15", "#203A30"], // brand-dark -> dark green
+  ["#213B2B", "#A68F6C"], // deep olive -> sand-dark
+  ["#A68F6C", "#101A15"], // sand-dark -> brand-dark
+  ["#203A30", "#8F2E2E"], // dark green -> muted red (sparing accent)
+  ["#6B5636", "#203A30"], // warm brown -> dark green
+  ["#213B2B", "#101A15"], // deep olive -> brand-dark
+  ["#8A7452", "#213B2B"], // muted sand-brown -> deep olive
 ];
 
 function hashOf(seed: string): number {

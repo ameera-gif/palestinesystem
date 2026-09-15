@@ -18,12 +18,34 @@ export default async function ManagementTeamPage() {
   return (
     <div className="grid lg:grid-cols-[1fr_360px] gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-ink mb-1">Ufuk Field Team</h1>
+        <h1 className="text-2xl font-semibold text-ink mb-1">Field Team</h1>
         <p className="text-sm text-muted mb-6">
           Manage the field staff accounts working on the programme. Creating or deactivating a MyFundAction
-          Project Coordinator or Admin account still requires an Admin — this page is scoped to Ufuk staff only.
+          Project Coordinator or Admin account still requires an Admin. This page is scoped to field staff only.
         </p>
-        <Card className="overflow-x-auto">
+        <div className="sm:hidden space-y-3">
+          {staff.map((s) => (
+            <Card key={s.id} className="p-4">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="font-medium text-ink">{s.name}</p>
+                  <p className="text-sm text-muted mt-0.5 break-all">{s.user.email}</p>
+                </div>
+                <StatusPill label={s.user.isActive ? "Active" : "Deactivated"} tone={s.user.isActive ? "success" : "neutral"} />
+              </div>
+              <p className="text-sm text-muted mt-2">
+                {s._count.assignedChildren} children assigned · Joined {formatDate(s.createdAt)}
+              </p>
+              <form action={toggleUfukStaffActiveAction.bind(null, s.userId, !s.user.isActive)} className="mt-3">
+                <Button type="submit" size="sm" variant="outline">
+                  {s.user.isActive ? "Deactivate" : "Activate"}
+                </Button>
+              </form>
+            </Card>
+          ))}
+        </div>
+
+        <Card className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-muted">

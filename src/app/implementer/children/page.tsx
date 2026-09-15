@@ -53,36 +53,66 @@ export default async function UfukChildrenPage({
       {children.length === 0 ? (
         <EmptyState title="No children found" />
       ) : (
-        <Card className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-muted">
-                <th className="p-3 font-medium">Child</th>
-                <th className="p-3 font-medium">Age</th>
-                <th className="p-3 font-medium">Region</th>
-                <th className="p-3 font-medium">Assigned to</th>
-                <th className="p-3 font-medium">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {children.map((c) => (
-                <tr key={c.id} className="border-b border-border last:border-0 hover:bg-brand-light/30">
-                  <td className="p-3">
-                    <Link href={`/implementer/children/${c.id}`} className="font-medium text-ink hover:text-brand">
+        <>
+          {/* Below sm: a five-column table has no room to breathe on a
+              phone — Status ends up clipped off-screen entirely. Field
+              staff are the most likely to actually be on a phone, so this
+              collapses to a stacked card per child instead of relying on
+              horizontal scroll. */}
+          <div className="sm:hidden space-y-3">
+            {children.map((c) => (
+              <Link
+                key={c.id}
+                href={`/implementer/children/${c.id}`}
+                className="block rounded-xl border border-border bg-surface p-4"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-medium text-ink">
                       {c.displayName} <span className="text-muted font-normal">({c.childCode})</span>
-                    </Link>
-                  </td>
-                  <td className="p-3 text-muted">{calculateAge(c.dateOfBirth)}</td>
-                  <td className="p-3 text-muted">{c.region}</td>
-                  <td className="p-3 text-muted">{c.assignedUfukStaff?.name ?? "—"}</td>
-                  <td className="p-3">
-                    <StatusBadge status={c.status} />
-                  </td>
+                    </p>
+                    <p className="text-sm text-muted mt-0.5">
+                      {calculateAge(c.dateOfBirth)} yrs · {c.region}
+                    </p>
+                  </div>
+                  <StatusBadge status={c.status} />
+                </div>
+                <p className="text-sm text-muted mt-2">Assigned to {c.assignedUfukStaff?.name ?? "—"}</p>
+              </Link>
+            ))}
+          </div>
+
+          <Card className="hidden sm:block overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border text-left text-muted">
+                  <th className="p-3 font-medium">Child</th>
+                  <th className="p-3 font-medium">Age</th>
+                  <th className="p-3 font-medium">Region</th>
+                  <th className="p-3 font-medium">Assigned to</th>
+                  <th className="p-3 font-medium">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
+              </thead>
+              <tbody>
+                {children.map((c) => (
+                  <tr key={c.id} className="border-b border-border last:border-0 hover:bg-brand-light/30">
+                    <td className="p-3">
+                      <Link href={`/implementer/children/${c.id}`} className="font-medium text-ink hover:text-brand">
+                        {c.displayName} <span className="text-muted font-normal">({c.childCode})</span>
+                      </Link>
+                    </td>
+                    <td className="p-3 text-muted">{calculateAge(c.dateOfBirth)}</td>
+                    <td className="p-3 text-muted">{c.region}</td>
+                    <td className="p-3 text-muted">{c.assignedUfukStaff?.name ?? "—"}</td>
+                    <td className="p-3">
+                      <StatusBadge status={c.status} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        </>
       )}
     </div>
   );

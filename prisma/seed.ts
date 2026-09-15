@@ -10,6 +10,7 @@ import { faker } from "@faker-js/faker";
 import bcrypt from "bcryptjs";
 import { initialsAvatarSvg, illustrativeCardSvg } from "../src/lib/avatar";
 import { saveGeneratedAsset } from "../src/lib/storage";
+import { calculateAge } from "../src/lib/format";
 
 const prisma = new PrismaClient();
 faker.seed(42);
@@ -107,6 +108,23 @@ function ageToDob(age: number): Date {
   return new Date(now.getFullYear() - age, faker.number.int({ min: 0, max: 11 }), faker.number.int({ min: 1, max: 28 }));
 }
 
+/**
+ * A realistic-enough age band for each education stage. Picking
+ * `educationStage` fully at random (the previous behaviour) produced
+ * combinations like a 6-year-old in "Grade 11 – Secondary" — exactly the
+ * "unrealistic age/grade combos" the redesign brief flagged as a
+ * data-quality problem to fix before polishing the UI.
+ */
+function stageForAge(age: number): (typeof EDUCATION_STAGES)[number] {
+  if (age <= 5) return "Kindergarten";
+  if (age <= 7) return "Grade 1 – Primary";
+  if (age <= 9) return "Grade 3 – Primary";
+  if (age <= 11) return "Grade 5 – Primary";
+  if (age <= 13) return "Grade 7 – Preparatory";
+  if (age <= 15) return "Grade 9 – Secondary";
+  return "Grade 11 – Secondary";
+}
+
 function monthsAgo(n: number): Date {
   const d = new Date();
   d.setMonth(d.getMonth() - n);
@@ -125,6 +143,25 @@ async function main() {
       { key: "distributionFrequencyMonths", value: "3", description: "Support delivered every N months" },
       { key: "reportingCycleMonths", value: "3", description: "A progress report is due every N months" },
       { key: "meetingCycleMonths", value: "6", description: "A sponsor-child meeting is due every N months" },
+      {
+        key: "orgDescription",
+        value:
+          "MyFundAction is a registered organisation that focuses on youth development in three main aspects: volunteerism, entrepreneurship, and academic excellence. We believe that a well-developed youth will further revamp the social and economic standard of a nation. With the tagline “For The Best Future,” we aim to be the best platform to develop future global leaders amongst the youth for a better tomorrow.",
+        description: "Shown on the public About page",
+      },
+      {
+        key: "footerTagline",
+        value:
+          "MyFundAction develops youth through volunteerism, entrepreneurship, and academic excellence, for the best future. This Gaza Child Sponsorship Programme is delivered with our field partner.",
+        description: "Shown in the site footer on every public page",
+      },
+      {
+        key: "orgAddress",
+        value:
+          "SH-G-26, Pangsapuri Perkhidmatan Knox Wawasan,\nJalan Sungai Burung 32/68, Seksyen 32, Bukit Rimau,\n40460 Shah Alam, Selangor Darul Ehsan",
+        description: "Registered address, shown on About, Contact, and the footer",
+      },
+      { key: "orgPhone", value: "+603 5525 3963", description: "Shown on About, Contact, and the footer" },
     ],
   });
 
@@ -157,9 +194,9 @@ async function main() {
   }
 
   const ufukDefs = [
-    { name: "Yusuf Al-Amin", email: "yusuf.alamin@ufuk-partner.org", title: "Senior Field Programme Officer" },
-    { name: "Layla Nasser", email: "layla.nasser@ufuk-partner.org", title: "Field Programme Officer" },
-    { name: "Omar Ziyad", email: "omar.ziyad@ufuk-partner.org", title: "Field Programme Officer" },
+    { name: "Yusuf Al-Amin", email: "yusuf.alamin@fieldpartner.org", title: "Senior Field Programme Officer" },
+    { name: "Layla Nasser", email: "layla.nasser@fieldpartner.org", title: "Field Programme Officer" },
+    { name: "Omar Ziyad", email: "omar.ziyad@fieldpartner.org", title: "Field Programme Officer" },
   ];
   const ufukStaff = [];
   for (const d of ufukDefs) {
@@ -239,11 +276,20 @@ async function main() {
     const childCode = `GZ-${String(i + 1).padStart(4, "0")}`;
     const slug = `${slugify(firstName)}-${childCode.toLowerCase()}`;
     const region = pick(REGIONS);
-    const educationStage = plan.age < 6 ? "Kindergarten" : pick(EDUCATION_STAGES);
+    // `dateOfBirth` is picked with a random day/month within the target
+    // birth year, so the age it computes to (via calculateAge, the same
+    // function every view of the app uses) can land a year off `plan.age`
+    // depending on whether that birthday has occurred yet this year. The
+    // bio text must be built from that *computed* age, not the raw plan
+    // value, or the two numbers silently drift apart — exactly the kind of
+    // "age mismatch" data-quality issue the redesign brief called out.
+    const dateOfBirth = ageToDob(plan.age);
+    const age = calculateAge(dateOfBirth);
+    const educationStage = stageForAge(age);
     const interests = faker.helpers.arrayElements(INTERESTS, 2);
     const aspiration = pick(ASPIRATIONS);
     const pronoun = plan.gender === ChildGender.MALE ? "he" : "she";
-    const bio = `${firstName} is a ${plan.age}-year-old child from ${region} who enjoys ${interests[0]} and ${interests[1]}. Currently in ${educationStage}, ${pronoun} dreams of one day helping ${aspiration.replace(/^become an?\s/, "become an ").startsWith("help") ? "" : ""}${aspiration}.`;
+    const bio = `${firstName} is a ${age}-year-old child from ${region} who enjoys ${interests[0]} and ${interests[1]}. Currently in ${educationStage}, ${pronoun} dreams of one day being able to ${aspiration}.`;
 
     const avatarSvg = initialsAvatarSvg(firstName, childCode);
     const photoUrl = await saveGeneratedAsset("avatars", `${childCode}.svg`, avatarSvg);
@@ -256,7 +302,7 @@ async function main() {
         slug,
         displayName: firstName,
         fullName,
-        dateOfBirth: ageToDob(plan.age),
+        dateOfBirth,
         gender: plan.gender,
         region,
         photoUrl,
@@ -278,8 +324,8 @@ async function main() {
         name: `${pick(["Abu", "Umm"])} ${firstName}`,
         relationship: pick(["Mother", "Father", "Grandmother", "Uncle"]),
         phone: faker.phone.number(),
-        address: `${region} — internal record, not shown to sponsors`,
-        householdNotes: "Household composition and needs on file with Ufuk field team.",
+        address: `${region} (internal record, not shown to sponsors)`,
+        householdNotes: "Household composition and needs on file with the field team.",
       },
     });
 
@@ -295,7 +341,7 @@ async function main() {
         childId: child.id,
         fromStatus: null,
         toStatus: ChildStatus.ELIGIBLE,
-        reason: "Initial registration and eligibility screening completed by Ufuk.",
+        reason: "Initial registration and eligibility screening completed by our field partner.",
         changedById: adminUser.id,
         changedAt: child.registeredAt,
       },
@@ -449,7 +495,7 @@ async function main() {
         data: {
           reportId: report.id,
           decision: "APPROVED",
-          comment: "Thorough and clear — approved.",
+          comment: "Thorough and clear. Approved.",
           reviewedById: pc.userId,
           reviewedAt: monthsAgo(1),
         },
@@ -474,7 +520,7 @@ async function main() {
       label: "Q1 2026",
       periodStart: monthsAgo(3),
       periodEnd: monthsAgo(0),
-      notes: "First-quarter 2026 support distribution — in progress.",
+      notes: "First-quarter 2026 support distribution, in progress.",
       createdByUfukId: ufukStaff[1].id,
       createdAt: monthsAgo(3),
     },
@@ -501,13 +547,13 @@ async function main() {
         verifiedAt: distStatusCycleQ4[i % distStatusCycleQ4.length] === "VERIFIED" ? monthsAgo(4) : null,
         issueNotes:
           distStatusCycleQ4[i % distStatusCycleQ4.length] === "ISSUE_FLAGGED"
-            ? "Amount delivered was short of the expected quarterly total; follow-up requested from Ufuk."
+            ? "Amount delivered was short of the expected quarterly total; follow-up requested from our field partner."
             : null,
       },
     });
 
     if (recQ4.status !== "PLANNED") {
-      const evidenceSvg = illustrativeCardSvg(`${child.displayName} — Q4 2025 support delivered`, child.id);
+      const evidenceSvg = illustrativeCardSvg(`${child.displayName}: Q4 2025 support delivered`, child.id);
       const evidenceUrl = await saveGeneratedAsset("evidence", `${recQ4.id}.svg`, evidenceSvg);
       await prisma.distributionEvidence.create({
         data: {
@@ -547,7 +593,7 @@ async function main() {
     const visibility = visibilityCycle[i % visibilityCycle.length];
     const approvalStatus = visibility === "INTERNAL" ? (i % 2 === 0 ? "PENDING" : "APPROVED") : "APPROVED";
 
-    const svg = illustrativeCardSvg(`${child.displayName} — programme activity`, `media-${child.id}`);
+    const svg = illustrativeCardSvg(`${child.displayName}: programme activity`, `media-${child.id}`);
     const fileUrl = await saveGeneratedAsset("media", `${child.id}-activity.svg`, svg);
 
     await prisma.media.create({
@@ -636,7 +682,7 @@ async function main() {
         childId: secondActive.childId,
         direction: "SPONSOR_TO_CHILD",
         occasion: "Encouragement",
-        content: "Just wanted to say how proud I am of your school progress this term — keep up the great work!",
+        content: "Just wanted to say how proud I am of your school progress this term. Keep up the great work!",
         status: "SUBMITTED",
       },
     });
@@ -721,17 +767,17 @@ async function main() {
     {
       title: "A Year of Steady Progress",
       excerpt: "How consistent sponsorship and verified reporting helped one family plan with confidence.",
-      body: "Since joining the programme, this family has received consistent quarterly support, verified at every step by our team and our field partner Ufuk. Regular academic updates show steady, encouraging progress at school.",
+      body: "Since joining the programme, this family has received consistent quarterly support, verified at every step by our team and our field partner. Regular academic updates show steady, encouraging progress at school.",
     },
     {
       title: "Small Support, Steady Encouragement",
       excerpt: "A look at how sponsorship updates create a real, ongoing connection between sponsor and child.",
-      body: "Every quarter, our field partner Ufuk documents how support was delivered, and our team reviews it before anything reaches a sponsor. It's a small process that adds up to a trustworthy, human connection.",
+      body: "Every quarter, our field partner documents how support was delivered, and our team reviews it before anything reaches a sponsor. It's a small process that adds up to a trustworthy, human connection.",
     },
     {
       title: "What Verified Reporting Looks Like in Practice",
       excerpt: "Behind every published update is a review process built to protect both children and sponsors.",
-      body: "Reports move through a clear path: drafted by Ufuk's field team, reviewed by MyFundAction, and only published once approved. This story walks through why that matters.",
+      body: "Reports move through a clear path: drafted by our field partner's team, reviewed by MyFundAction, and only published once approved. This story walks through why that matters.",
     },
   ];
   for (let i = 0; i < storyDefs.length; i++) {
@@ -758,7 +804,7 @@ async function main() {
   console.log(`  Admin:              admin@myfundaction.org`);
   console.log(`  MyFundAction PC:    nadia.suleiman@myfundaction.org`);
   console.log(`  MyFundAction PC:    farid.rahman@myfundaction.org`);
-  console.log(`  Ufuk field team:    yusuf.alamin@ufuk-partner.org`);
+  console.log(`  Field team:         yusuf.alamin@fieldpartner.org`);
   console.log(`  Sponsor:            sponsor.amira@example.com`);
   console.log(`  Sponsor:            sponsor.james@example.com`);
 }

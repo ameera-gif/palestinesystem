@@ -14,7 +14,9 @@ export default async function SignupPage({ searchParams }: { searchParams: Promi
         </Link>
         <h1 className="text-2xl font-semibold text-ink">Create your sponsor account</h1>
         <p className="mt-2 text-sm text-muted">
-          Takes less than a minute. You'll be taken back to confirm your sponsorship right after.
+          {childId
+            ? "Takes less than a minute. You’ll be taken back to confirm your sponsorship right after."
+            : "Takes less than a minute. You can browse children and start a sponsorship once you’re signed in."}
         </p>
       </div>
       <Card className="p-6">

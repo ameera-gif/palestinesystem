@@ -79,7 +79,7 @@ export default async function ManagementMeetingsPage() {
               ))}
             </Select>
             <Input name="cycleLabel" placeholder="e.g. 2026 H1" required />
-            <p className="text-xs text-muted">Sponsor is matched automatically from the child's active sponsorship.</p>
+            <p className="text-xs text-muted">Sponsor is matched automatically from the child&rsquo;s active sponsorship.</p>
             <Button type="submit" size="sm">
               Request Availability
             </Button>

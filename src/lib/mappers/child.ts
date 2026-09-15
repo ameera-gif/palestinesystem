@@ -21,6 +21,11 @@ export type PublicChildCard = {
   region: string;
   educationStage: string | null;
   bio: string | null;
+  // Interests/aspirations live on the card (not just the full profile) so
+  // the directory can show "Drawing · Football" + a one-line dream instead
+  // of a long bio excerpt — see ChildCard.
+  interests: string | null;
+  aspirations: string | null;
   photoUrl: string | null;
   availableForSponsorship: boolean;
 };
@@ -35,22 +40,17 @@ export function toPublicChildCard(child: Child): PublicChildCard {
     region: child.region,
     educationStage: child.educationStage,
     bio: child.bio,
+    interests: child.interests,
+    aspirations: child.aspirations,
     photoUrl: child.photoUrl,
     availableForSponsorship: child.status === "AVAILABLE",
   };
 }
 
-export type PublicChildProfile = PublicChildCard & {
-  interests: string | null;
-  aspirations: string | null;
-};
+export type PublicChildProfile = PublicChildCard;
 
 export function toPublicChildProfile(child: Child): PublicChildProfile {
-  return {
-    ...toPublicChildCard(child),
-    interests: child.interests,
-    aspirations: child.aspirations,
-  };
+  return toPublicChildCard(child);
 }
 
 export type SponsorChildView = PublicChildProfile & {

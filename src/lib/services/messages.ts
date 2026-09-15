@@ -18,7 +18,7 @@ export async function submitSponsorMessage(sponsorId: string, childId: string, o
 
   await notifyAllProjectCoordinators({
     title: "New sponsor message to moderate",
-    body: `A sponsor has written a message — please review before it's delivered.`,
+    body: `A sponsor has written a message. Please review before it's delivered.`,
     entityType: "Message",
     entityId: message.id,
     link: "/management/review",

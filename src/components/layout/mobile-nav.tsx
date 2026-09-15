@@ -39,8 +39,13 @@ export function MobileNav({
   useEffect(() => {
     if (!open) return;
     document.body.style.overflow = "hidden";
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
     return () => {
       document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);
 
@@ -66,8 +71,8 @@ export function MobileNav({
         open &&
         createPortal(
           <div className="fixed inset-0 z-50 lg:hidden">
-            <div className="absolute inset-0 bg-black/30" onClick={() => setOpen(false)} />
-            <div className="absolute inset-x-0 top-16 bottom-0 bg-paper overflow-y-auto shadow-xl">
+            <div className="absolute inset-0 bg-black/30 animate-fade-up" onClick={() => setOpen(false)} />
+            <div className="animate-enter absolute inset-x-0 top-16 bottom-0 bg-paper overflow-y-auto shadow-xl">
               <nav className="flex flex-col px-4 py-4">
                 {navItems.map((item) => (
                   <Link

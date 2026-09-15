@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Select } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 
-export const metadata = { title: "Sponsor a Child — MyFundAction" };
+export const metadata = { title: "Sponsor a Child | MyFundAction" };
 
 const REGIONS = ["Gaza City", "Khan Younis", "Rafah", "Deir al-Balah", "Jabalia", "Beit Lahia", "Nuseirat"];
 
@@ -33,8 +33,8 @@ export default async function SponsorAChildPage({
       <div className="max-w-2xl">
         <h1 className="font-display text-3xl sm:text-5xl font-semibold text-ink tracking-tight">Sponsor a Child</h1>
         <p className="mt-3 text-muted">
-          Every child below has been registered by our field partner Ufuk and reviewed by MyFundAction. Choose a
-          child to sponsor, and you'll receive verified updates throughout your sponsorship.
+          Every child below has been registered by our field partner and reviewed by MyFundAction. Choose a
+          child to sponsor, and you&rsquo;ll receive verified updates throughout your sponsorship.
         </p>
       </div>
 

@@ -20,34 +20,22 @@ export default async function DistributionBatchDetailPage({ params }: { params: 
         {batch.notes && ` · ${batch.notes}`}
       </p>
 
-      <Card className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border text-left text-muted">
-              <th className="p-3 font-medium">Child</th>
-              <th className="p-3 font-medium">Expected</th>
-              <th className="p-3 font-medium">Status</th>
-              <th className="p-3 font-medium">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {batch.records.map((r) => (
-              <RecordRow
-                key={r.id}
-                batchId={batch.id}
-                record={{
-                  id: r.id,
-                  childDisplayName: r.child.displayName,
-                  childCode: r.child.childCode,
-                  status: r.status,
-                  expectedAmount: r.expectedAmount,
-                  currency: r.currency,
-                  evidenceCount: r.evidence.length,
-                }}
-              />
-            ))}
-          </tbody>
-        </table>
+      <Card className="overflow-hidden">
+        {batch.records.map((r) => (
+          <RecordRow
+            key={r.id}
+            batchId={batch.id}
+            record={{
+              id: r.id,
+              childDisplayName: r.child.displayName,
+              childCode: r.child.childCode,
+              status: r.status,
+              expectedAmount: r.expectedAmount,
+              currency: r.currency,
+              evidenceCount: r.evidence.length,
+            }}
+          />
+        ))}
       </Card>
     </div>
   );

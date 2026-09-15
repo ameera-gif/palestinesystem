@@ -1,7 +1,8 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { getUfukDashboardData } from "@/lib/services/ufuk-dashboard";
+import { getUfukDashboardData, getUfukTasks } from "@/lib/services/ufuk-dashboard";
 import { StatTile } from "@/components/ui/stat-tile";
+import { TaskList } from "@/components/portal/task-list";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { StatusBadge } from "@/components/ui/status-pill";
@@ -10,7 +11,7 @@ import { formatDateTime } from "@/lib/format";
 export default async function UfukDashboard() {
   const session = await auth();
   const ufukId = session!.user.profileId!;
-  const data = await getUfukDashboardData(ufukId);
+  const [data, tasks] = await Promise.all([getUfukDashboardData(ufukId), getUfukTasks(ufukId)]);
 
   const recentComments = await prisma.report.findMany({
     where: { submittedByUfukId: ufukId, currentReviewComment: { not: null } },
@@ -22,9 +23,15 @@ export default async function UfukDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-ink">What needs your attention</h1>
+        <h1 className="text-2xl font-semibold text-ink">Today&rsquo;s Tasks</h1>
         <p className="text-sm text-muted mt-1">Your assigned children, {session!.user.name}.</p>
       </div>
+
+      <Card>
+        <CardContent className="pt-5">
+          <TaskList tasks={tasks} />
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatTile label="Total children" value={data.totalChildren} href="/implementer/children" />
@@ -52,7 +59,7 @@ export default async function UfukDashboard() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Recent MyFundAction comments</CardTitle>
+          <CardTitle>Latest Notifications from MyFundAction</CardTitle>
         </CardHeader>
         <CardContent>
           {recentComments.length === 0 ? (
@@ -63,7 +70,7 @@ export default async function UfukDashboard() {
                 <div key={r.id} className="text-sm border-b border-border pb-3 last:border-0 last:pb-0">
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-ink">{r.child.displayName}</span>
-                    <StatusBadge status={r.status} />
+                    <StatusBadge status={r.status} domain="report" />
                   </div>
                   <p className="text-muted mt-1">{r.currentReviewComment}</p>
                   <p className="text-xs text-muted mt-1">{formatDateTime(r.reviewedAt)}</p>

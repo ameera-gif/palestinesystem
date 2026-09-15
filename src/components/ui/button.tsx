@@ -36,7 +36,13 @@ type ButtonAsLink = BaseProps & { href: string } & Omit<
 export function Button(props: ButtonAsButton | ButtonAsLink) {
   const { variant = "primary", size = "md", className, children, ...rest } = props;
   const classes = cn(
-    "inline-flex items-center justify-center font-medium transition-all duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 active:shadow-none disabled:opacity-50 disabled:pointer-events-none disabled:hover:translate-y-0 disabled:hover:shadow-none whitespace-nowrap",
+    // ring-accent (not ring-brand) deliberately: several button variants sit
+    // on the dark-green hero/trust sections, where a same-hue green ring
+    // would nearly disappear against the background. The red accent stays
+    // visible on both the ivory and dark-green surfaces the button appears
+    // on, and ring-offset is skipped for the same reason — a fixed offset
+    // color would only be correct on one of the two backgrounds.
+    "inline-flex items-center justify-center font-medium transition-all duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 active:shadow-none disabled:opacity-50 disabled:pointer-events-none disabled:hover:translate-y-0 disabled:hover:shadow-none whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-bright",
     VARIANT_CLASSES[variant],
     SIZE_CLASSES[size],
     className,

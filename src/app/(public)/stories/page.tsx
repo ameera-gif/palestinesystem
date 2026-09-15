@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { formatDate } from "@/lib/format";
 
-export const metadata = { title: "Stories & Updates — MyFundAction" };
+export const metadata = { title: "Stories & Updates | MyFundAction" };
 
 export default async function StoriesPage() {
   const stories = await prisma.story.findMany({ where: { publishedAt: { not: null } }, orderBy: { publishedAt: "desc" } });

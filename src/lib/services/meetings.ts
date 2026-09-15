@@ -26,7 +26,7 @@ export async function requestUfukAvailability(childId: string, sponsorId: string
     action: "MEETING_AVAILABILITY_REQUESTED",
     entityType: "Meeting",
     entityId: meeting.id,
-    summary: `Availability requested from Ufuk for ${child.displayName}'s sponsor meeting.`,
+    summary: `Availability requested from our partner for ${child.displayName}'s sponsor meeting.`,
   });
 
   return meeting;
@@ -44,7 +44,7 @@ export async function confirmUfukAvailability(meetingId: string, ufukId: string,
     action: "MEETING_AVAILABILITY_CONFIRMED",
     entityType: "Meeting",
     entityId: meetingId,
-    summary: `Ufuk confirmed availability for ${meeting.child.displayName}'s meeting.`,
+    summary: `Our partner confirmed availability for ${meeting.child.displayName}'s meeting.`,
   });
 
   return meeting;

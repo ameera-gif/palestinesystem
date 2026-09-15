@@ -60,7 +60,7 @@ export async function createChild(input: ChildFormInput, actorUserId: string) {
         },
       },
       statusHistory: {
-        create: { toStatus: "DRAFT", reason: "Initial registration by Ufuk field team.", changedById: actorUserId },
+        create: { toStatus: "DRAFT", reason: "Initial registration by field team.", changedById: actorUserId },
       },
     },
   });

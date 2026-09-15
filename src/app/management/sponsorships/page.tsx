@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { formatDate, formatMoney } from "@/lib/format";
 import { pauseSponsorshipAction, resumeSponsorshipAction } from "./actions";
+import { confirmSponsorshipAction } from "../review/actions";
 
 export default async function SponsorshipsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   const { status } = await searchParams;
@@ -54,6 +55,13 @@ export default async function SponsorshipsPage({ searchParams }: { searchParams:
                 </div>
                 <div className="flex items-center gap-3">
                   <StatusBadge status={s.status} />
+                  {s.status === "PENDING" && (
+                    <form action={confirmSponsorshipAction.bind(null, s.id)}>
+                      <Button type="submit" size="sm">
+                        Confirm Sponsorship
+                      </Button>
+                    </form>
+                  )}
                   {s.status === "ACTIVE" && (
                     <details className="relative">
                       <summary className="text-sm text-brand font-medium cursor-pointer list-none">Pause…</summary>

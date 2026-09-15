@@ -15,11 +15,11 @@ function dateInputValue(d: Date | string | null | undefined) {
 
 export function ReportForm({
   report,
-  children,
+  childOptions,
   defaultChildId,
 }: {
   report?: Report;
-  children: { id: string; displayName: string }[];
+  childOptions: { id: string; displayName: string }[];
   defaultChildId?: string;
 }) {
   const action = saveReportAction.bind(null, report?.id);
@@ -30,7 +30,7 @@ export function ReportForm({
     <form action={formAction} className="space-y-8">
       {report?.status === "RETURNED" && report.currentReviewComment && (
         <div className="rounded-lg bg-danger-light text-danger px-4 py-3 text-sm">
-          <p className="font-semibold mb-1">Returned for correction by MyFundAction:</p>
+          <p className="font-semibold mb-1">Amendment requested by MyFundAction:</p>
           <p>{report.currentReviewComment}</p>
         </div>
       )}
@@ -38,13 +38,13 @@ export function ReportForm({
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-ink uppercase tracking-wide">Report Details</h2>
-          {report && <StatusBadge status={report.status} />}
+          {report && <StatusBadge status={report.status} domain="report" />}
         </div>
         <div className="grid sm:grid-cols-3 gap-4">
           <Field label="Child" required>
             <Select name="childId" required defaultValue={report?.childId ?? defaultChildId ?? ""} disabled={!editable}>
               <option value="">Select…</option>
-              {children.map((c) => (
+              {childOptions.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.displayName}
                 </option>

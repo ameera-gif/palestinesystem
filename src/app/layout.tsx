@@ -1,33 +1,39 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Fraunces } from "next/font/google";
+import { Inter, Manrope, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { getLocale } from "@/lib/i18n";
 import { isRtl } from "@/lib/i18n/config";
 
-// Plus Jakarta Sans: the base UI/body font everywhere — warm, geometric,
-// modern, and legible at small sizes. Falls back to system fonts (including
-// Arabic-capable ones) automatically for glyphs it doesn't cover, so RTL
-// Arabic content is unaffected. Fraunces is a display serif reserved for
-// public-site headlines only (see .font-display) — it gives the marketing
-// pages real typographic character without touching the sober, functional
-// sans used throughout the three operational portals.
-const plusJakarta = Plus_Jakarta_Sans({
+// Inter: base UI/body font everywhere — clear, neutral, fintech-grade
+// legibility at small sizes. Manrope: headings/display font across the
+// whole app — modern geometric sans, used for section titles, card names,
+// nav. Instrument Serif is reserved for a handful of large editorial
+// statement headlines only (hero, trust section) — never body copy, never
+// the whole UI. All three fall back to system/Arabic-capable fonts
+// automatically for glyphs they don't cover, so RTL content is unaffected.
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-jakarta",
+  variable: "--font-inter",
   display: "swap",
 });
 
-const fraunces = Fraunces({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-fraunces",
+  variable: "--font-manrope",
   display: "swap",
-  axes: ["opsz", "SOFT", "WONK"],
+});
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ["latin"],
+  variable: "--font-instrument-serif",
+  display: "swap",
+  weight: "400",
 });
 
 export const metadata: Metadata = {
-  title: "MyFundAction — Gaza Child Sponsorship Programme",
+  title: "MyFundAction | Gaza Child Sponsorship Programme",
   description:
-    "Sponsor a child in Gaza through MyFundAction. Verified updates, transparent support delivery, delivered in partnership with our field partner Ufuk.",
+    "Sponsor a child in Gaza through MyFundAction. Verified updates, transparent support delivery, delivered in partnership with our field partner.",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
@@ -35,7 +41,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const dir = isRtl(locale) ? "rtl" : "ltr";
 
   return (
-    <html lang={locale} dir={dir} className={`h-full antialiased ${plusJakarta.variable} ${fraunces.variable}`}>
+    <html
+      lang={locale}
+      dir={dir}
+      className={`h-full antialiased ${inter.variable} ${manrope.variable} ${instrumentSerif.variable}`}
+    >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

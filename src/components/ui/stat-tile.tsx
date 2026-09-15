@@ -17,17 +17,19 @@ export function StatTile({
   label: string;
   value: number | string;
   href?: string;
-  tone?: "neutral" | "warning" | "danger";
+  tone?: "neutral" | "warning" | "danger" | "success";
 }) {
   const toneClasses =
     tone === "danger"
       ? "text-danger"
       : tone === "warning"
         ? "text-warning"
-        : "text-ink";
+        : tone === "success"
+          ? "text-success"
+          : "text-ink";
 
   const barClasses =
-    tone === "danger" ? "bg-danger" : tone === "warning" ? "bg-warning" : "bg-border";
+    tone === "danger" ? "bg-danger" : tone === "warning" ? "bg-warning" : tone === "success" ? "bg-success" : "bg-border";
 
   const content = (
     <>

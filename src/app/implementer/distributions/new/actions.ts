@@ -9,7 +9,7 @@ export type BatchFormState = { error?: string } | null;
 
 export async function createBatchAction(_prev: BatchFormState, formData: FormData): Promise<BatchFormState> {
   const session = await requireRole("UFUK");
-  if (!session.user.profileId) return { error: "Ufuk profile not found." };
+  if (!session.user.profileId) return { error: "Field staff profile not found." };
 
   const label = String(formData.get("label") ?? "");
   const periodStart = String(formData.get("periodStart") ?? "");

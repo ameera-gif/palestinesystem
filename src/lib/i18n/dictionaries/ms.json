@@ -8,7 +8,7 @@
     "about": "Tentang MyFundAction",
     "faq": "Soalan Lazim",
     "contact": "Hubungi Kami",
-    "login": "Log Masuk Penaja"
+    "login": "Log Masuk"
   },
   "common": {
     "sponsorThisChild": "Tajakan Kanak-Kanak Ini",
@@ -20,17 +20,37 @@
   },
   "home": {
     "heroEyebrow": "MyFundAction · Program Tajaan Kanak-Kanak Gaza",
-    "heroTitle": "Bersama seorang kanak-kanak di Gaza, di setiap langkah.",
-    "heroSubtitle": "Tajaan bulanan anda disalurkan dan disahkan di lapangan oleh rakan kongsi kami, Ufuk, dan setiap kemas kini disemak oleh MyFundAction sebelum sampai kepada anda — jadi anda sentiasa yakin sumbangan anda telus dan sampai kepada kanak-kanak yang tepat.",
-    "heroCta": "Tajakan Seorang Kanak-Kanak",
-    "heroCtaSecondary": "Cara Tajaan Berfungsi",
-    "trustTitle": "Hubungan yang boleh dipercayai, di setiap peringkat",
-    "trustSubtitle": "Tiga pihak, satu garis akauntabiliti yang jelas.",
+    "heroLine1": "Berjalan bersama mereka.",
+    "heroLine2": "Bukan sekali sahaja.",
+    "heroLine3": "Di setiap langkah.",
+    "heroSubtitle": "Tajaan bulanan anda disalurkan dan disahkan di lapangan oleh rakan kongsi lapangan kami, dan setiap kemas kini disemak oleh MyFundAction sebelum sampai kepada anda. Anda sentiasa yakin sumbangan anda telus dan sampai kepada kanak-kanak yang tepat.",
+    "heroCtaPrimary": "Kenali Kanak-Kanak →",
+    "heroCtaSecondary": "Lihat Cara Ia Berfungsi",
+    "heroTrustMicrocopy": "Disahkan oleh MyFundAction · Disalurkan bersama rakan kongsi kami di Gaza",
+    "storyEyebrow": "Satu kisah, antara banyak",
+    "storyTitle": "Setiap kanak-kanak di sini mempunyai nama, keluarga, dan kehidupan yang tergantung.",
+    "storyBody": "Setiap profil dalam sistem ini adalah milik seorang kanak-kanak sebenar, dengan mata pelajaran kegemaran, sebuah keluarga, dan rutin yang terganggu. Keluarga mereka sedang menunggu, dan rakan kongsi kami di lapangan memastikan sokongan anda sampai kepada mereka.",
+    "journeyEyebrow": "Cara ia berfungsi",
+    "journeyTitle": "Perjalanan sokongan anda",
+    "journeySubtitle": "Dari saat anda menaja seorang kanak-kanak sehingga anda melihat perkembangannya, setiap langkah didokumenkan dan disahkan.",
+    "meetTitle": "Kenali seseorang yang boleh anda temani.",
+    "meetSubtitle": "Setiap profil telah disemak dan diluluskan oleh MyFundAction.",
+    "trustEyebrow": "Kepercayaan & pengesahan",
+    "trustTitle": "Kepercayaan tidak sepatutnya menjadi tekaan.",
+    "trustSubtitle": "Setiap kemas kini melalui rantaian yang sama sebelum sampai kepada anda.",
+    "impactEyebrow": "Impak kami",
+    "impactLede": "Buat masa ini, program ini menyokong 13 kanak-kanak di Gaza. Setiap satu disemak, disahkan, dan kelihatan kepada mereka yang menyokongnya.",
+    "dashboardPreviewEyebrow": "Papan pemuka penaja anda",
+    "dashboardPreviewTitle": "Ruang peribadi untuk mengikuti perjalanan mereka",
+    "dashboardPreviewSubtitle": "Sebaik sahaja anda menaja seorang kanak-kanak, di sinilah anda akan melihat perkembangan mereka: kemas kini, pencapaian, dan laporan yang disahkan, semuanya di satu tempat.",
+    "faqTitle": "Soalan lazim",
+    "finalCtaTitle": "Bersedia untuk berjalan bersama kanak-kanak di Gaza?",
+    "finalCtaSubtitle": "Setiap tajaan disahkan, dilaporkan, dan disemak, supaya sokongan anda sampai kepada kanak-kanak yang sepatutnya.",
+    "finalCtaButton": "Tajakan Seorang Kanak-Kanak",
     "howTitle": "Bagaimana tajaan anda sampai kepada kanak-kanak",
     "impactTitle": "Program kami, dalam angka"
   },
   "footer": {
-    "tagline": "MyFundAction — bantuan kemanusiaan dan pembangunan, beroperasi di Gaza melalui rakan kongsi lapangan kami, Ufuk.",
     "rights": "Hak cipta terpelihara."
   }
 }

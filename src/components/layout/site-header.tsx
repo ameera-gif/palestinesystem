@@ -10,16 +10,16 @@ import { getDictionaryForRequest } from "@/lib/i18n";
 export async function SiteHeader() {
   const [session, { locale, dict }] = await Promise.all([auth(), getDictionaryForRequest()]);
 
-  // Shorter labels than the full dictionary strings — these sit in a single
-  // fixed-height row and must never wrap. Page titles elsewhere still use
-  // the full dict.nav.* strings.
+  // Deliberately short: four items only. About and FAQ still exist as full
+  // pages, linked from the footer — keeping them out of the primary nav is
+  // part of the redesign (a crowded top bar undercuts the "easy to
+  // navigate" goal). Page titles elsewhere still use the full dict.nav.*
+  // strings.
   const navItems = [
     { href: "/sponsor-a-child", label: "Sponsor a Child" },
     { href: "/how-it-works", label: "How It Works" },
-    { href: "/impact", label: "Our Impact" },
+    { href: "/impact", label: "Impact" },
     { href: "/stories", label: "Stories" },
-    { href: "/about", label: "About Us" },
-    { href: "/faq", label: "FAQ" },
   ];
 
   const loginHref = session?.user ? homeForRole(session.user.role) : "/login";

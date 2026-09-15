@@ -13,20 +13,28 @@ export default async function SponsorChildReportsPage({ params }: { params: Prom
 
   // Sponsors only ever see PUBLISHED reports — this is the whole point of
   // the review workflow. Draft/submitted/under-review/returned stay internal.
-  const reports = await prisma.report.findMany({
-    where: { childId: id, status: "PUBLISHED" },
-    orderBy: { publishedAt: "desc" },
-  });
+  // A PENDING sponsorship (match not yet confirmed) skips the query
+  // entirely — reports published before the match existed shouldn't show
+  // up as if they already belong to this relationship.
+  const reports =
+    sponsorship.status === "PENDING"
+      ? []
+      : await prisma.report.findMany({
+          where: { childId: id, status: "PUBLISHED" },
+          orderBy: { publishedAt: "desc" },
+        });
 
   return (
     <div>
       <h1 className="text-2xl font-semibold text-ink mb-1">{sponsorship.child.displayName}</h1>
       <ChildTabs childId={id} />
 
-      {reports.length === 0 ? (
+      {sponsorship.status === "PENDING" ? (
+        <EmptyState title="Sponsorship not yet active" description="Reports will appear here once MyFundAction confirms your match." />
+      ) : reports.length === 0 ? (
         <EmptyState
           title="No published reports yet"
-          description="MyFundAction publishes a verified progress report once Ufuk submits one and it's been reviewed."
+          description="MyFundAction publishes a verified progress report once our partner submits one and it's been reviewed."
         />
       ) : (
         <div className="space-y-5">
@@ -71,8 +79,8 @@ export default async function SponsorChildReportsPage({ params }: { params: Prom
                 </div>
                 {report.guardianRemarks && (
                   <div>
-                    <p className="font-semibold mb-1">Guardian's note</p>
-                    <p className="text-muted italic">"{report.guardianRemarks}"</p>
+                    <p className="font-semibold mb-1">Guardian&rsquo;s note</p>
+                    <p className="text-muted italic">&ldquo;{report.guardianRemarks}&rdquo;</p>
                   </div>
                 )}
               </CardContent>

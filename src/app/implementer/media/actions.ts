@@ -8,7 +8,7 @@ export type MediaFormState = { error?: string; success?: boolean } | null;
 
 export async function uploadMediaAction(_prev: MediaFormState, formData: FormData): Promise<MediaFormState> {
   const session = await requireRole("UFUK");
-  if (!session.user.profileId) return { error: "Ufuk profile not found." };
+  if (!session.user.profileId) return { error: "Field staff profile not found." };
 
   const childId = String(formData.get("childId") ?? "");
   const fileUrl = String(formData.get("fileUrl") ?? "");

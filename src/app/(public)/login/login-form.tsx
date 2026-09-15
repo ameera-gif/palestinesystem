@@ -21,7 +21,7 @@ export function LoginForm({ callbackUrl }: { callbackUrl: string }) {
         <p className="text-sm text-danger bg-danger-light rounded-lg px-3 py-2">{state.error}</p>
       )}
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? "Signing in…" : "Sign In"}
+        {isPending ? "Signing in…" : "Sign In →"}
       </Button>
     </form>
   );

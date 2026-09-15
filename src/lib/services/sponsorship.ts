@@ -113,7 +113,7 @@ export async function confirmSponsorshipRequest(sponsorshipId: string, pcId: str
   await notify({
     userId: sponsorship.sponsor.userId,
     title: "Your sponsorship is confirmed!",
-    body: `Thank you — your sponsorship of ${sponsorship.child.displayName} is now active. You'll receive verified updates here.`,
+    body: `Thank you. Your sponsorship of ${sponsorship.child.displayName} is now active. You'll receive verified updates here.`,
     entityType: "Sponsorship",
     entityId: sponsorship.id,
     link: `/portal/children/${sponsorship.childId}`,

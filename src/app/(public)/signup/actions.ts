@@ -38,7 +38,7 @@ export async function signupAction(_prevState: SignupState, formData: FormData):
     return null;
   } catch (error) {
     if (error instanceof AuthError) {
-      return { error: "Account created — please sign in." };
+      return { error: "Account created. Please sign in." };
     }
     throw error;
   }

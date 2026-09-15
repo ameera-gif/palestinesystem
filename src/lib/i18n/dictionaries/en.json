@@ -8,7 +8,7 @@
     "about": "About MyFundAction",
     "faq": "FAQ",
     "contact": "Contact",
-    "login": "Sponsor Login"
+    "login": "Sign In"
   },
   "common": {
     "sponsorThisChild": "Sponsor This Child",
@@ -20,17 +20,37 @@
   },
   "home": {
     "heroEyebrow": "MyFundAction · Gaza Child Sponsorship Programme",
-    "heroTitle": "Walk alongside a child in Gaza, every step of the way.",
-    "heroSubtitle": "Your monthly sponsorship is delivered and verified on the ground by our partner Ufuk, and every update is reviewed by MyFundAction before it reaches you — so you always know your support is real, safe, and reaching the right child.",
-    "heroCta": "Sponsor a Child",
-    "heroCtaSecondary": "How Sponsorship Works",
-    "trustTitle": "A relationship you can trust, at every step",
-    "trustSubtitle": "Three parties, one clear line of accountability.",
+    "heroLine1": "Walk with them.",
+    "heroLine2": "Not just once.",
+    "heroLine3": "Every step of the way.",
+    "heroSubtitle": "Your monthly sponsorship is delivered and verified on the ground by our field partner, and every update is reviewed by MyFundAction before it reaches you. You always know your support is real, safe, and reaching the right child.",
+    "heroCtaPrimary": "Meet the Children →",
+    "heroCtaSecondary": "See How It Works",
+    "heroTrustMicrocopy": "Verified by MyFundAction · Delivered with our partner in Gaza",
+    "storyEyebrow": "One story, of many",
+    "storyTitle": "Every child here has a name, a family, and a life on hold.",
+    "storyBody": "Every profile in this system belongs to a real child, with a favourite subject, a family, and a routine that was interrupted. Their family is waiting, and our partner on the ground makes sure your support reaches exactly them.",
+    "journeyEyebrow": "How it works",
+    "journeyTitle": "The journey of your support",
+    "journeySubtitle": "From the moment you sponsor a child to the moment you see how they're doing, every step is documented and verified.",
+    "meetTitle": "Meet someone you could walk alongside.",
+    "meetSubtitle": "Every profile has been reviewed and approved by MyFundAction.",
+    "trustEyebrow": "Trust & verification",
+    "trustTitle": "Trust shouldn't be something you have to guess.",
+    "trustSubtitle": "Every update passes through the same chain before it reaches you.",
+    "impactEyebrow": "Our impact",
+    "impactLede": "Right now, the programme supports 13 children in Gaza. Each one is reviewed, verified, and visible to the people supporting them.",
+    "dashboardPreviewEyebrow": "Your sponsor dashboard",
+    "dashboardPreviewTitle": "A private space to follow their journey",
+    "dashboardPreviewSubtitle": "Once you sponsor a child, this is where you'll see how they're doing: updates, milestones, and verified reports, all in one place.",
+    "faqTitle": "Questions, answered",
+    "finalCtaTitle": "Ready to walk with a child in Gaza?",
+    "finalCtaSubtitle": "Every sponsorship is verified, reported on, and reviewed, so your support reaches the child it's meant for.",
+    "finalCtaButton": "Sponsor a Child",
     "howTitle": "How your sponsorship reaches a child",
     "impactTitle": "Our programme, in numbers"
   },
   "footer": {
-    "tagline": "MyFundAction — humanitarian relief and development, working in Gaza through our field partner Ufuk.",
     "rights": "All rights reserved."
   }
 }

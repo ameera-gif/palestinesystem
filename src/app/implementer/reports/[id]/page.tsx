@@ -19,7 +19,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl font-semibold text-ink mb-1">{report.child.displayName}'s Report</h1>
+      <h1 className="text-2xl font-semibold text-ink mb-1">{report.child.displayName}&rsquo;s Report</h1>
       <p className="text-sm text-muted mb-6">
         {["DRAFT", "RETURNED"].includes(report.status)
           ? "You can continue editing this report."
@@ -27,7 +27,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ i
       </p>
       <Card>
         <CardContent className="pt-6">
-          <ReportForm report={report} children={children} />
+          <ReportForm report={report} childOptions={children} />
         </CardContent>
       </Card>
     </div>

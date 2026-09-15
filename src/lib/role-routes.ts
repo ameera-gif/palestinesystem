@@ -26,7 +26,7 @@ export function homeForRole(role: Role): string {
 
 export const ROLE_LABELS: Record<Role, string> = {
   SPONSOR: "Sponsor",
-  UFUK: "Ufuk Field Team",
+  UFUK: "Field Team",
   MYFUNDACTION_PC: "MyFundAction Project Coordinator",
   ADMIN: "System Administrator",
 };

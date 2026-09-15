@@ -63,7 +63,7 @@ export default async function UfukChildDetailPage({ params }: { params: Promise<
                 <span className="text-muted">Education:</span> {child.educationStage || "—"} · {child.schoolName || "—"}
               </p>
               <p>
-                <span className="text-muted">Assigned Ufuk staff:</span> {child.assignedUfukStaff?.name ?? "Unassigned"}
+                <span className="text-muted">Assigned field staff:</span> {child.assignedUfukStaff?.name ?? "Unassigned"}
               </p>
               <div className="pt-2">
                 <Button href={`/implementer/reports/new?childId=${child.id}`} size="sm">
@@ -75,7 +75,7 @@ export default async function UfukChildDetailPage({ params }: { params: Promise<
 
           <Card className="border-danger/30">
             <CardHeader>
-              <CardTitle>Guardian / Household — Restricted</CardTitle>
+              <CardTitle>Guardian / Household (Restricted)</CardTitle>
               <p className="text-xs text-danger mt-1">Never shown to sponsors or the public.</p>
             </CardHeader>
             <CardContent className="space-y-1 text-sm text-ink">
@@ -106,7 +106,7 @@ export default async function UfukChildDetailPage({ params }: { params: Promise<
                   {child.reports.map((r) => (
                     <div key={r.id} className="py-2 flex items-center justify-between text-sm">
                       <span className="text-ink">{formatDate(r.reportingPeriodEnd)}</span>
-                      <StatusBadge status={r.status} />
+                      <StatusBadge status={r.status} domain="report" />
                     </div>
                   ))}
                 </div>

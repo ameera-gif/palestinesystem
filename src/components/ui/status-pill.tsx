@@ -42,7 +42,8 @@ const STATUS_MAP: Record<string, { label: string; tone: Tone }> = {
   PAYMENT_ISSUE: { label: "Payment Issue", tone: "danger" },
   COMPLETED: { label: "Completed", tone: "neutral" },
   CANCELLED: { label: "Cancelled", tone: "neutral" },
-  // Report
+  // Report (non-report-domain fallback only — see REPORT_STATUS_MAP below
+  // for the terms actually shown on report statuses)
   SUBMITTED: { label: "Submitted", tone: "info" },
   UNDER_REVIEW: { label: "Under Review", tone: "info" },
   RETURNED: { label: "Returned for Correction", tone: "danger" },
@@ -62,7 +63,7 @@ const STATUS_MAP: Record<string, { label: string; tone: Tone }> = {
   // Meetings
   NOT_DUE: { label: "Not Due Yet", tone: "neutral" },
   DUE: { label: "Due", tone: "warning" },
-  AWAITING_UFUK: { label: "Awaiting Ufuk", tone: "warning" },
+  AWAITING_UFUK: { label: "Awaiting Field Partner", tone: "warning" },
   COORDINATING: { label: "Coordinating", tone: "info" },
   SCHEDULED: { label: "Scheduled", tone: "brand" },
   // Messages
@@ -70,7 +71,24 @@ const STATUS_MAP: Record<string, { label: string; tone: Tone }> = {
   MORE_INFO_REQUESTED: { label: "More Info Requested", tone: "warning" },
 };
 
-export function StatusBadge({ status }: { status: string }) {
-  const entry = STATUS_MAP[status] ?? { label: status, tone: "neutral" as Tone };
+// The redesign brief standardizes report-review status wording to exactly
+// these six terms everywhere they appear. They can't just replace the
+// entries above — "APPROVED" and "SUBMITTED" are also raw values of other
+// enums (MediaApprovalStatus, Message status) rendered through the same
+// <StatusBadge>, and "Verified"/"Published to Sponsor" would be the wrong
+// word choice there. `domain="report"` opts a call site into this map
+// instead, so the two vocabularies never collide.
+const REPORT_STATUS_MAP: Record<string, { label: string; tone: Tone }> = {
+  DRAFT: { label: "Draft", tone: "neutral" },
+  SUBMITTED: { label: "Submitted", tone: "info" },
+  UNDER_REVIEW: { label: "Under Review", tone: "info" },
+  RETURNED: { label: "Amendment Required", tone: "danger" },
+  APPROVED: { label: "Verified", tone: "success" },
+  PUBLISHED: { label: "Published to Sponsor", tone: "success" },
+};
+
+export function StatusBadge({ status, domain }: { status: string; domain?: "report" }) {
+  const map = domain === "report" ? REPORT_STATUS_MAP : STATUS_MAP;
+  const entry = map[status] ?? STATUS_MAP[status] ?? { label: status, tone: "neutral" as Tone };
   return <StatusPill label={entry.label} tone={entry.tone} />;
 }

@@ -1,7 +1,9 @@
 import { auth } from "@/auth";
 import { toSponsorChildView } from "@/lib/mappers/child";
 import { getSponsorChildOrNotFound } from "@/lib/services/sponsor-access";
+import { buildJourneyEvents } from "@/lib/services/journey";
 import { ChildTabs } from "@/components/portal/child-tabs";
+import { JourneyTimeline } from "@/components/portal/journey-timeline";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-pill";
 import { formatDate } from "@/lib/format";
@@ -11,6 +13,8 @@ export default async function SponsorChildProfilePage({ params }: { params: Prom
   const session = await auth();
   const sponsorship = await getSponsorChildOrNotFound(session!.user.profileId!, id);
   const child = toSponsorChildView(sponsorship.child);
+  const events = await buildJourneyEvents(child.id, sponsorship.startDate);
+  const latest = events[events.length - 1];
 
   return (
     <div>
@@ -34,8 +38,35 @@ export default async function SponsorChildProfilePage({ params }: { params: Prom
 
       <ChildTabs childId={id} />
 
+      {sponsorship.status === "PENDING" ? (
+        <Card className="mb-6 border-info/20 bg-info-light/40">
+          <CardContent className="pt-5">
+            <p className="text-sm text-ink">
+              Your request has been submitted. MyFundAction is confirming the match. {child.displayName}&rsquo;s journey
+              will appear here once your sponsorship is active.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        latest && (
+          <Card className="mb-6 border-brand/20 bg-brand-light/40">
+            <CardContent className="pt-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-brand-dark">Latest from {child.displayName}</p>
+              <p className="mt-1 text-sm text-ink">{latest.summary}</p>
+            </CardContent>
+          </Card>
+        )
+      )}
+
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-6">
+          {sponsorship.status !== "PENDING" && (
+            <Card>
+              <CardContent className="pt-5">
+                <JourneyTimeline events={events} />
+              </CardContent>
+            </Card>
+          )}
           <Card>
             <CardHeader>
               <CardTitle>About {child.displayName}</CardTitle>

@@ -1,7 +1,16 @@
 import { prisma } from "@/lib/prisma";
 
+const OVERDUE_REVIEW_DAYS = 5;
+
 /** Programme-wide KPIs for the MyFundAction dashboard — overdue-first, not chart-first. */
 export async function getPcDashboardData() {
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const overdueCutoff = new Date();
+  overdueCutoff.setDate(overdueCutoff.getDate() - OVERDUE_REVIEW_DAYS);
+  const recentCutoff = new Date();
+  recentCutoff.setDate(recentCutoff.getDate() - 7);
+
   const [
     totalChildren,
     eligibleChildren,
@@ -15,6 +24,9 @@ export async function getPcDashboardData() {
     sponsorshipsPaused,
     sponsorshipsPaymentIssue,
     mediaPending,
+    reportsApprovedToday,
+    reportsOverdueForReview,
+    reportsRecentlyPublished,
   ] = await Promise.all([
     prisma.child.count(),
     prisma.child.count({ where: { status: { in: ["ELIGIBLE", "AVAILABLE", "SPONSORED"] } } }),
@@ -28,6 +40,9 @@ export async function getPcDashboardData() {
     prisma.sponsorship.count({ where: { status: "PAUSED" } }),
     prisma.sponsorship.count({ where: { status: "PAYMENT_ISSUE" } }),
     prisma.media.count({ where: { approvalStatus: "PENDING" } }),
+    prisma.report.count({ where: { status: { in: ["APPROVED", "PUBLISHED"] }, approvedAt: { gte: startOfToday } } }),
+    prisma.report.count({ where: { status: { in: ["SUBMITTED", "UNDER_REVIEW"] }, submittedAt: { lt: overdueCutoff } } }),
+    prisma.report.count({ where: { status: "PUBLISHED", publishedAt: { gte: recentCutoff } } }),
   ]);
 
   const pendingSponsorshipRequests = await prisma.sponsorship.count({ where: { status: "PENDING" } });
@@ -46,5 +61,8 @@ export async function getPcDashboardData() {
     sponsorshipsPaymentIssue,
     mediaPending,
     pendingSponsorshipRequests,
+    reportsApprovedToday,
+    reportsOverdueForReview,
+    reportsRecentlyPublished,
   };
 }

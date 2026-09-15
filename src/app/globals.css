@@ -1,58 +1,56 @@
 @import "tailwindcss";
 
 :root {
-  /* MyFundAction brand tokens, built from the actual logo: warm gold/amber
-     (the "My" in the wordmark) as the primary call-to-action colour, and a
-     deep warm charcoal (the "FundAction" wordmark colour) as the
-     professional/structural colour for navigation and secondary UI.
-     Deliberately restrained: no gradients, no glassmorphism. */
-  --color-paper: #fbf7ee;
-  --color-surface: #ffffff;
-  --color-ink: #241f1a;
-  --color-muted: #79705f;
-  --color-border: #e9e1cd;
+  /* MyFundAction redesign palette — editorial, humanitarian, restrained.
+     Palestinian identity colours (green, red) are used deliberately but
+     sparingly: green as the primary structural/CTA colour (it's the
+     dominant, trustworthy tone throughout), red reserved for small
+     emphasis accents only — never a flood of flag colours. */
+  --color-paper: #f7f5ef; /* warm ivory page background */
+  --color-surface: #ffffff; /* white cards */
+  --color-ink: #171717; /* main text */
+  --color-muted: #6b6a62; /* warm muted grey, secondary text */
+  --color-border: #e6e1d6; /* soft warm border */
 
-  /* Structural brand colour — deep warm charcoal, used for headers, active
-     nav, and secondary buttons. */
-  --color-brand: #332a1d;
-  --color-brand-dark: #1e1810;
-  --color-brand-light: #f3ecda;
+  /* Primary dark green — structural colour AND primary CTA colour. */
+  --color-brand: #203a30;
+  --color-brand-dark: #101a15; /* dark section background */
+  --color-brand-light: #e8ece6; /* pale green tint for alternating sections */
 
-  /* Primary call-to-action colour — the logo's gold, darkened just enough
-     to carry white button text accessibly. */
-  --color-accent: #b3720c;
-  --color-accent-dark: #8c5906;
-  --color-accent-light: #fbedd0;
-  /* The vivid, undarkened gold from the mark itself — decorative use only
-     (logo, icons, underlines, borders) — never as a text-bearing background. */
-  --color-accent-bright: #f2971f;
+  /* Muted Palestinian red — a sparing accent (verification marks, small
+     emphasis, the odd highlighted word), never a primary/flood colour. */
+  --color-accent: #b33a3a;
+  --color-accent-dark: #8f2e2e;
+  --color-accent-light: #f5e6e3;
+  --color-accent-bright: #c24747;
 
-  /* Second brand colour — a confident azure blue, the true colour-wheel
-     complement of the logo's gold (gold sits at ~37° hue; true complement
-     is ~217°, landing here). Complements, rather than just "another warm
-     tone next to the other warm tones" — genuine contrast against the
-     gold/charcoal palette. Also happens to fit: Gaza is a Mediterranean
-     coastal strip. Used for alternating section tints, secondary badges,
-     and avatar variety. */
-  --color-blue: #1d6fa5;
-  --color-blue-dark: #154f78;
-  --color-blue-light: #e2eef6;
+  /* Warm sand — secondary tint for alternating sections/badges. */
+  --color-sand: #d9cbb6;
+  --color-sand-dark: #a68f6c;
+  --color-sand-light: #f1ebe0;
+
+  /* Legacy alias — earlier iterations of this UI used a blue secondary
+     colour; remapped to sand so any not-yet-touched surface still renders
+     in the current palette rather than a stray blue. */
+  --color-blue: var(--color-sand-dark);
+  --color-blue-dark: #8a7452;
+  --color-blue-light: var(--color-sand-light);
 
   --color-success: #2f7a4d;
   --color-success-light: #e6f3ea;
   --color-warning: #9c6b12;
   --color-warning-light: #faf1de;
-  --color-danger: #b3402f;
+  --color-danger: #c0392b;
   --color-danger-light: #fbe9e5;
   --color-info: #2c6a8a;
   --color-info-light: #e6f1f6;
 
-  /* var(--font-jakarta) is injected by next/font on <html> — if it hasn't
-     loaded yet (or on a page that somehow skips RootLayout) the stack falls
-     back gracefully to system fonts, including Arabic-capable ones for RTL. */
-  --font-sans:
-    var(--font-jakarta), "Segoe UI", ui-sans-serif, system-ui, "Noto Sans Arabic", Tahoma, Arial, sans-serif;
-  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  /* Body: Inter. Headings/display: Manrope. Instrument Serif is reserved
+     for a handful of large editorial statement headlines only (trust
+     section, hero) — never the whole UI, per design direction. */
+  --font-sans: var(--font-inter), "Segoe UI", ui-sans-serif, system-ui, "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+  --font-display: var(--font-manrope), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-editorial: var(--font-instrument-serif), Georgia, "Times New Roman", serif;
 }
 
 @theme inline {
@@ -68,6 +66,9 @@
   --color-accent-dark: var(--color-accent-dark);
   --color-accent-light: var(--color-accent-light);
   --color-accent-bright: var(--color-accent-bright);
+  --color-sand: var(--color-sand);
+  --color-sand-dark: var(--color-sand-dark);
+  --color-sand-light: var(--color-sand-light);
   --color-blue: var(--color-blue);
   --color-blue-dark: var(--color-blue-dark);
   --color-blue-light: var(--color-blue-light);
@@ -81,6 +82,7 @@
   --color-info-light: var(--color-info-light);
   --font-sans: var(--font-sans);
   --font-display: var(--font-display);
+  --font-editorial: var(--font-editorial);
 }
 
 body {
@@ -93,13 +95,40 @@ body {
   transform: scaleX(-1);
 }
 
-/* Entrance motion — deliberately CSS `animation`, not a JS+IntersectionObserver
-   scroll-reveal. A native CSS animation always runs and always completes on
-   its own; it can never get stuck hidden the way a JS-gated opacity state
-   can (that was tried and removed — see project history). Content is fully
-   visible without this rule ever running: unsupported browsers, crawlers,
-   print/PDF export and reduced-motion users all just see the final state
-   immediately, never a blank one. */
+/* ============================================================
+   MOTION SYSTEM
+   One shared vocabulary for the whole app: page entrance, card
+   stagger, hover, modal/detail expansion, scroll reveal. Every rule
+   below is transform/opacity only (GPU-composited), respects
+   prefers-reduced-motion, and — critically — never uses an
+   opacity:0 *base* style outside a guarded @media/@supports block,
+   so content is always visible by default and motion is strictly
+   additive. (A JS-gated version of this was tried and removed for
+   getting stuck permanently invisible — see project history.)
+   ============================================================ */
+
+/* Page entrance: opacity + translateY + blur-to-sharp, ~450ms. */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .animate-enter {
+    animation: page-enter 450ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+/* Same idea, used for the hero/above-the-fold on-load sequence — kept as
+   its own name since it's tuned slightly softer (no blur, so text is
+   crisp immediately; blur reads better on larger hero type). */
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -110,22 +139,16 @@ body {
     transform: translateY(0);
   }
 }
-
 @media (prefers-reduced-motion: no-preference) {
   .animate-fade-up {
     animation: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }
 
-/* Scroll-tied motion — genuinely driven by scroll position (CSS scroll-driven
-   animations, `animation-timeline: view()`), not a one-shot on-load fade.
-   This is what "the JS reveal I removed earlier" was trying to do, done the
-   way that's actually safe: no JS, no hidden-until-observer state. The
-   `.animate-on-scroll` class has NO effect at all outside the @supports
-   block below, so on any browser without support (or with reduced-motion
-   on) the element just renders normally, fully visible, every time — the
-   animation can only ever be additive, never something content depends on
-   to become visible. */
+/* Scroll-tied reveal — CSS scroll-driven animation (animation-timeline:
+   view()), not a JS IntersectionObserver. `.animate-on-scroll` has zero
+   effect outside the @supports guard, so unsupported browsers, crawlers,
+   and print all just see the element fully visible, always. */
 @keyframes scroll-fade-in {
   from {
     opacity: 0;
@@ -136,7 +159,6 @@ body {
     transform: translateY(0) scale(1);
   }
 }
-
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .animate-on-scroll {
@@ -146,13 +168,6 @@ body {
     }
   }
 }
-
-/* Belt-and-suspenders: print/PDF export has no real "scroll position" for
-   the timeline above to resolve against, and that's exactly the kind of
-   edge case that bit the JS scroll-reveal this replaced (verified safe for
-   actual scrolling — see project history — but printing is a different
-   rendering path, untested by that verification). Force full visibility
-   there regardless of whatever the animation would otherwise compute. */
 @media print {
   .animate-on-scroll {
     opacity: 1 !important;
@@ -161,26 +176,118 @@ body {
   }
 }
 
-/* Continuous decorative motion — all purely visual (never gates content, no
-   opacity-0-until-JS anywhere), all transform/opacity only (cheap, GPU-
-   composited, no layout thrash), all paused under reduced-motion. This is
-   what makes the hero/CTA backgrounds feel alive instead of a flat static
-   gradient + silhouette. */
+/* Self-contained horizontal progress line (child profile's sponsorship
+   timeline) — fills once as it scrolls into view. Simpler than the
+   cross-element journey rail above: this is a single subtle beat, not a
+   scrollytelling section. */
+@keyframes timeline-fill-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .timeline-fill-x {
+      transform-origin: left;
+      animation: timeline-fill-x linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 55%;
+    }
+  }
+}
 
+/* Card stagger — pair with an inline `animation-delay` of n * 70ms. */
+.stagger-item {
+  animation-delay: calc(var(--stagger-index, 0) * 70ms);
+}
+
+/* ============================================================
+   SCROLLYTELLING RAIL (sticky-scroll "Journey" sections)
+   `.journey-section` names a view-timeline; any descendant, anywhere in
+   the DOM, can drive off it with a different `animation-range` slice —
+   this is how a rail pinned via plain `position: sticky` gets a fill bar
+   and sequential node activation tied to how far the user has scrolled
+   through the whole section, with no JS and no scroll listeners. Static,
+   fully-legible fallback (all stages visible, rail unfilled) outside the
+   @supports guard — used on the homepage's Journey of Support and the
+   sponsor dashboard's Our Journey timeline.
+   ============================================================ */
+.journey-section {
+  view-timeline-name: --journey-view;
+  view-timeline-axis: block;
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .journey-fill {
+      transform-origin: top;
+      animation: journey-fill-scale linear both;
+      animation-timeline: --journey-view;
+      animation-range: cover 0% cover 100%;
+    }
+    .journey-node[data-stage="1"] { animation: journey-node-on linear both; animation-timeline: --journey-view; animation-range: cover 2% cover 16%; }
+    .journey-node[data-stage="2"] { animation: journey-node-on linear both; animation-timeline: --journey-view; animation-range: cover 16% cover 32%; }
+    .journey-node[data-stage="3"] { animation: journey-node-on linear both; animation-timeline: --journey-view; animation-range: cover 32% cover 48%; }
+    .journey-node[data-stage="4"] { animation: journey-node-on linear both; animation-timeline: --journey-view; animation-range: cover 48% cover 64%; }
+    .journey-node[data-stage="5"] { animation: journey-node-on linear both; animation-timeline: --journey-view; animation-range: cover 64% cover 80%; }
+    .journey-node[data-stage="6"] { animation: journey-node-on linear both; animation-timeline: --journey-view; animation-range: cover 80% cover 98%; }
+  }
+}
+@keyframes journey-fill-scale {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes journey-node-on {
+  from { opacity: 0.4; transform: scale(0.82); background-color: var(--color-sand); }
+  to { opacity: 1; transform: scale(1); background-color: var(--color-brand); }
+}
+
+/* ============================================================
+   VIEW TRANSITIONS (native browser API, via React's <ViewTransition>)
+   Used for the child card -> profile shared-element morph. Named groups
+   below control timing/easing; unnamed cross-page transitions (default
+   Next.js navigation) get a quick, subtle crossfade rather than the
+   browser's default instant swap or a jarring flash.
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-group(.morph) {
+    animation-duration: 420ms;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  ::view-transition-image-pair(.morph) {
+    animation-name: via-blur;
+  }
+  @keyframes via-blur {
+    30% {
+      filter: blur(2px);
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+  }
+}
+::view-transition {
+  pointer-events: none;
+}
+
+/* ============================================================
+   Continuous decorative motion (hero/CTA glow, rotating mark, flowing
+   wave) — carried over from the prior pass, still on-brand.
+   ============================================================ */
 .blob-field {
   position: absolute;
   inset: 0;
   overflow: hidden;
   pointer-events: none;
 }
-
 .blob {
   position: absolute;
   border-radius: 9999px;
   filter: blur(64px);
   will-change: transform;
 }
-
 @keyframes blob-drift-a {
   0%,
   100% {
@@ -208,7 +315,6 @@ body {
     transform: translate(25px, -35px) scale(0.92);
   }
 }
-
 @media (prefers-reduced-motion: no-preference) {
   .blob-a {
     animation: blob-drift-a 20s ease-in-out infinite;
@@ -221,7 +327,6 @@ body {
   }
 }
 
-/* Slow continuous rotation for the sunburst watermark. */
 @keyframes spin-slow {
   to {
     transform: rotate(360deg);
@@ -233,8 +338,6 @@ body {
   }
 }
 
-/* Seamless infinite horizontal scroll for the wave motif — two copies of
-   the same SVG placed side by side, translated exactly one copy-width. */
 @keyframes wave-flow {
   from {
     transform: translateX(0);
@@ -249,3 +352,21 @@ body {
   }
 }
 
+/* Verification checkmark draw-on — used once, for the "Verified by
+   MyFundAction" moment (trust section, review actions). Small, precise,
+   not decorative. */
+@keyframes check-draw {
+  from {
+    stroke-dashoffset: 24;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .animate-check {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 0;
+    animation: check-draw 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}

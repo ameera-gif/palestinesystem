@@ -36,7 +36,7 @@ export default async function ManagementChildDetailPage({ params }: { params: Pr
               {child.displayName} <span className="text-muted font-normal text-base">({child.childCode})</span>
             </h1>
             <p className="text-sm text-muted">
-              {child.fullName} · {calculateAge(child.dateOfBirth)} yrs · {child.region} · Ufuk: {child.assignedUfukStaff?.name ?? "Unassigned"}
+              {child.fullName} · {calculateAge(child.dateOfBirth)} yrs · {child.region} · Field staff: {child.assignedUfukStaff?.name ?? "Unassigned"}
             </p>
           </div>
         </div>
@@ -57,7 +57,7 @@ export default async function ManagementChildDetailPage({ params }: { params: Pr
                   {child.reports.map((r) => (
                     <div key={r.id} className="py-2 flex items-center justify-between text-sm">
                       <span className="text-ink">{formatDate(r.reportingPeriodEnd)}</span>
-                      <StatusBadge status={r.status} />
+                      <StatusBadge status={r.status} domain="report" />
                     </div>
                   ))}
                 </div>
@@ -89,7 +89,7 @@ export default async function ManagementChildDetailPage({ params }: { params: Pr
 
           <Card className="border-danger/30">
             <CardHeader>
-              <CardTitle>Guardian / Household — Restricted</CardTitle>
+              <CardTitle>Guardian / Household (Restricted)</CardTitle>
             </CardHeader>
             <CardContent className="space-y-1 text-sm text-ink">
               {child.guardian ? (

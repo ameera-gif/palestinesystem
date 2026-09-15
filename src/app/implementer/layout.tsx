@@ -11,7 +11,7 @@ export default async function ImplementerLayout({ children }: { children: React.
 
   return (
     <PortalShell
-      portalLabel="Ufuk Field Portal"
+      portalLabel="Field Partner Portal"
       userName={session.user.name ?? "Field Team"}
       unreadCount={unreadCount}
       navItems={[

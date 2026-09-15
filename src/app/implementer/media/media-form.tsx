@@ -1,38 +1,19 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { Field, Select, Textarea, Input } from "@/components/ui/field";
+import { FileUpload } from "@/components/ui/file-upload";
 import { Button } from "@/components/ui/button";
 import { uploadMediaAction, type MediaFormState } from "./actions";
 
-export function MediaUploadForm({ children }: { children: { id: string; displayName: string }[] }) {
+export function MediaUploadForm({ childOptions }: { childOptions: { id: string; displayName: string }[] }) {
   const [state, formAction, isPending] = useActionState<MediaFormState, FormData>(uploadMediaAction, null);
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
-
-  async function handleFile(file: File) {
-    setUploading(true);
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
-      const data = await res.json();
-      if (data.fileUrl) {
-        setFileUrl(data.fileUrl);
-        setFileName(file.name);
-      }
-    } finally {
-      setUploading(false);
-    }
-  }
 
   return (
     <form action={formAction} className="space-y-4">
-      <input type="hidden" name="fileUrl" value={fileUrl ?? ""} />
       <Field label="Child" required>
         <Select name="childId" required>
-          {children.map((c) => (
+          {childOptions.map((c) => (
             <option key={c.id} value={c.id}>
               {c.displayName}
             </option>
@@ -46,13 +27,8 @@ export function MediaUploadForm({ children }: { children: { id: string; displayN
           <option value="DOCUMENT">Document</option>
         </Select>
       </Field>
-      <Field label="File" required hint={uploading ? "Uploading…" : fileName ? `Uploaded: ${fileName}` : undefined}>
-        <Input
-          type="file"
-          accept="image/*,video/*,.pdf"
-          required={!fileUrl}
-          onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
-        />
+      <Field label="File" required>
+        <FileUpload name="fileUrl" accept="image/*,video/*,.pdf" required label="Click to upload a photo, video, or document" />
       </Field>
       <Field label="Description">
         <Textarea name="description" maxLength={300} />
@@ -73,8 +49,8 @@ export function MediaUploadForm({ children }: { children: { id: string; displayN
       </label>
 
       {state?.error && <p className="text-sm text-danger">{state.error}</p>}
-      {state?.success && <p className="text-sm text-success">Uploaded — awaiting MyFundAction review.</p>}
-      <Button type="submit" disabled={isPending || uploading || !fileUrl}>
+      {state?.success && <p className="text-sm text-success">Uploaded. Awaiting MyFundAction review.</p>}
+      <Button type="submit" disabled={isPending}>
         {isPending ? "Saving…" : "Upload for Review"}
       </Button>
     </form>

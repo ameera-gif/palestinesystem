@@ -49,34 +49,57 @@ export default async function UfukReportsPage({ searchParams }: { searchParams: 
       {reports.length === 0 ? (
         <EmptyState title="No reports found" />
       ) : (
-        <Card className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-muted">
-                <th className="p-3 font-medium">Child</th>
-                <th className="p-3 font-medium">Period</th>
-                <th className="p-3 font-medium">Status</th>
-                <th className="p-3 font-medium"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {reports.map((r) => (
-                <tr key={r.id} className="border-b border-border last:border-0 hover:bg-brand-light/30">
-                  <td className="p-3 font-medium text-ink">{r.child.displayName}</td>
-                  <td className="p-3 text-muted">{periodLabel(r.reportingPeriodStart, r.reportingPeriodEnd)}</td>
-                  <td className="p-3">
-                    <StatusBadge status={r.status} />
-                  </td>
-                  <td className="p-3">
-                    <Link href={`/implementer/reports/${r.id}`} className="text-brand font-medium">
-                      {["DRAFT", "RETURNED"].includes(r.status) ? "Edit" : "View"}
-                    </Link>
-                  </td>
+        <>
+          <div className="sm:hidden space-y-3">
+            {reports.map((r) => (
+              <Link
+                key={r.id}
+                href={`/implementer/reports/${r.id}`}
+                className="block rounded-xl border border-border bg-surface p-4"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-medium text-ink">{r.child.displayName}</p>
+                    <p className="text-sm text-muted mt-0.5">{periodLabel(r.reportingPeriodStart, r.reportingPeriodEnd)}</p>
+                  </div>
+                  <StatusBadge status={r.status} domain="report" />
+                </div>
+                <p className="mt-2 text-sm font-medium text-brand">
+                  {["DRAFT", "RETURNED"].includes(r.status) ? "Edit" : "View"} →
+                </p>
+              </Link>
+            ))}
+          </div>
+
+          <Card className="hidden sm:block overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border text-left text-muted">
+                  <th className="p-3 font-medium">Child</th>
+                  <th className="p-3 font-medium">Period</th>
+                  <th className="p-3 font-medium">Status</th>
+                  <th className="p-3 font-medium"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </Card>
+              </thead>
+              <tbody>
+                {reports.map((r) => (
+                  <tr key={r.id} className="border-b border-border last:border-0 hover:bg-brand-light/30">
+                    <td className="p-3 font-medium text-ink">{r.child.displayName}</td>
+                    <td className="p-3 text-muted">{periodLabel(r.reportingPeriodStart, r.reportingPeriodEnd)}</td>
+                    <td className="p-3">
+                      <StatusBadge status={r.status} domain="report" />
+                    </td>
+                    <td className="p-3">
+                      <Link href={`/implementer/reports/${r.id}`} className="text-brand font-medium">
+                        {["DRAFT", "RETURNED"].includes(r.status) ? "Edit" : "View"}
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+        </>
       )}
     </div>
   );

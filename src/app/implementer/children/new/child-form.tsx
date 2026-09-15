@@ -25,7 +25,7 @@ export function ChildForm({
           <Field label="Display name (shown to sponsors)" required>
             <Input name="displayName" required />
           </Field>
-          <Field label="Full legal name" required hint="Restricted — never shown to sponsors or the public">
+          <Field label="Full legal name" required hint="Restricted. Never shown to sponsors or the public.">
             <Input name="fullName" required />
           </Field>
           <Field label="Date of birth" required>
@@ -37,7 +37,7 @@ export function ChildForm({
               <option value="FEMALE">Female</option>
             </Select>
           </Field>
-          <Field label="Region" required hint="Coarse location only — never an exact address">
+          <Field label="Region" required hint="Coarse location only. Never an exact address.">
             <Select name="region" required>
               <option value="">Select a region</option>
               {REGIONS.map((r) => (
@@ -48,14 +48,14 @@ export function ChildForm({
             </Select>
           </Field>
           {selfAssign ? (
-            <Field label="Assigned Ufuk staff" hint="You're registering this child, so it's assigned to you.">
+            <Field label="Assigned field staff" hint="You're registering this child, so it's assigned to you.">
               <input type="hidden" name="assignedUfukStaffId" value={selfAssign.id} />
               <div className="flex items-center h-9.5 px-3 rounded-lg border border-border bg-brand-light text-sm text-ink">
                 {selfAssign.name} <span className="text-muted ml-1">(you)</span>
               </div>
             </Field>
           ) : (
-            <Field label="Assigned Ufuk staff" hint="You're registering on Ufuk's behalf — choose who's responsible.">
+            <Field label="Assigned field staff" hint="You're registering on the field team's behalf. Choose who's responsible.">
               <Select name="assignedUfukStaffId">
                 <option value="">Unassigned</option>
                 {ufukStaff.map((u) => (
@@ -98,7 +98,7 @@ export function ChildForm({
 
       <section className="space-y-4">
         <h2 className="text-sm font-semibold text-ink uppercase tracking-wide">
-          Guardian / Household <span className="text-danger font-normal normal-case">— restricted, never shown to sponsors</span>
+          Guardian / Household <span className="text-danger font-normal normal-case">(restricted, never shown to sponsors)</span>
         </h2>
         <div className="grid sm:grid-cols-2 gap-4">
           <Field label="Guardian name" required>

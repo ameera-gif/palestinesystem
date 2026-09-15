@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/field";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ReviewTabs } from "@/components/portal/review-tabs";
+import { ReviewPanel } from "@/components/portal/review-panel";
 import { periodLabel, formatDate, formatMoney } from "@/lib/format";
 import {
   approveReportAction,
@@ -41,7 +42,7 @@ export default async function ReviewCentrePage({ searchParams }: { searchParams:
   return (
     <div>
       <h1 className="text-2xl font-semibold text-ink mb-1">Review Centre</h1>
-      <p className="text-sm text-muted mb-6">Everything Ufuk has submitted, waiting for your review.</p>
+      <p className="text-sm text-muted mb-6">Everything our field partner has submitted, waiting for your review.</p>
 
       <ReviewTabs active={tab} counts={counts} />
 
@@ -52,50 +53,55 @@ export default async function ReviewCentrePage({ searchParams }: { searchParams:
           ) : (
             <>
               {reportsPending.map((r) => (
-                <Card key={r.id}>
-                  <CardContent className="p-5">
-                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                      <div>
-                        <p className="font-semibold text-ink">{r.child.displayName}</p>
-                        <p className="text-xs text-muted">
-                          {periodLabel(r.reportingPeriodStart, r.reportingPeriodEnd)} · Submitted by {r.submittedByUfuk?.name} · {formatDate(r.submittedAt)}
-                        </p>
+                <ReviewPanel
+                  key={r.id}
+                  submission={
+                    <>
+                      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <div>
+                          <p className="font-semibold text-ink">{r.child.displayName}</p>
+                          <p className="text-xs text-muted">
+                            {periodLabel(r.reportingPeriodStart, r.reportingPeriodEnd)} · Submitted by {r.submittedByUfuk?.name} · {formatDate(r.submittedAt)}
+                          </p>
+                        </div>
+                        <StatusBadge status={r.status} domain="report" />
                       </div>
-                      <StatusBadge status={r.status} />
-                    </div>
-                    <div className="text-sm text-ink space-y-1.5 mb-4 bg-paper rounded-lg p-3">
-                      {r.narrativeUpdate && <p>{r.narrativeUpdate}</p>}
-                      {r.academicProgress && (
-                        <p>
-                          <span className="text-muted">Academic:</span> {r.academicProgress}
-                        </p>
-                      )}
-                      {r.attendanceSummary && (
-                        <p>
-                          <span className="text-muted">Attendance:</span> {r.attendanceSummary}
-                        </p>
-                      )}
-                    </div>
+                      <div className="text-sm text-ink space-y-1.5 bg-paper rounded-lg p-3">
+                        {r.narrativeUpdate && <p>{r.narrativeUpdate}</p>}
+                        {r.academicProgress && (
+                          <p>
+                            <span className="text-muted">Academic:</span> {r.academicProgress}
+                          </p>
+                        )}
+                        {r.attendanceSummary && (
+                          <p>
+                            <span className="text-muted">Attendance:</span> {r.attendanceSummary}
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  }
+                  verification={
                     <form className="space-y-3">
                       <Textarea name="comment" placeholder="Add a comment (required if returning for correction)…" />
-                      <div className="flex gap-2">
+                      <div className="flex flex-col gap-2">
                         <Button type="submit" formAction={approveReportAction.bind(null, r.id)} size="sm">
-                          Approve
+                          Verify
                         </Button>
                         <Button type="submit" formAction={returnReportAction.bind(null, r.id)} variant="outline" size="sm">
-                          Return for Correction
+                          Request Amendment
                         </Button>
                       </div>
                     </form>
-                  </CardContent>
-                </Card>
+                  }
+                />
               ))}
               {reportsApproved.map((r) => (
                 <Card key={r.id} className="border-success/30">
                   <CardContent className="p-5 flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <p className="font-semibold text-ink">{r.child.displayName}</p>
-                      <p className="text-xs text-muted">Approved {formatDate(r.approvedAt)} — ready to publish to sponsor</p>
+                      <p className="text-xs text-muted">Approved {formatDate(r.approvedAt)}, ready to publish to sponsor</p>
                     </div>
                     <form action={publishReportAction.bind(null, r.id)}>
                       <Button type="submit" size="sm">
@@ -116,28 +122,35 @@ export default async function ReviewCentrePage({ searchParams }: { searchParams:
             <EmptyState title="No distribution evidence waiting for review" />
           ) : (
             distributions.map((d) => (
-              <Card key={d.id}>
-                <CardContent className="p-5">
-                  <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                    <div>
-                      <p className="font-semibold text-ink">{d.child.displayName}</p>
-                      <p className="text-xs text-muted">
-                        {d.batch.label} · {formatMoney(d.actualAmount ?? d.expectedAmount, d.currency)} · {formatDate(d.distributionDate)}
-                      </p>
+              <ReviewPanel
+                key={d.id}
+                submission={
+                  <>
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                      <div>
+                        <p className="font-semibold text-ink">{d.child.displayName}</p>
+                        <p className="text-xs text-muted">
+                          {d.batch.label} · {formatMoney(d.actualAmount ?? d.expectedAmount, d.currency)} · {formatDate(d.distributionDate)}
+                        </p>
+                      </div>
+                      <StatusBadge status={d.status} />
                     </div>
-                    <StatusBadge status={d.status} />
-                  </div>
-                  {d.evidence.length > 0 && (
-                    <div className="flex gap-2 mb-3">
-                      {d.evidence.map((e) => (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img key={e.id} src={e.fileUrl} alt="" className="h-20 w-28 rounded-md object-cover border border-border" />
-                      ))}
-                    </div>
-                  )}
+                    {d.evidence.length > 0 ? (
+                      <div className="flex gap-2 flex-wrap">
+                        {d.evidence.map((e) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img key={e.id} src={e.fileUrl} alt="" className="h-20 w-28 rounded-md object-cover border border-border" />
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted">No evidence attached yet.</p>
+                    )}
+                  </>
+                }
+                verification={
                   <form className="space-y-3">
                     <Textarea name="issueNotes" placeholder="Issue notes (required if flagging)…" />
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2">
                       <Button type="submit" formAction={verifyDistributionAction.bind(null, d.id)} size="sm">
                         Verify
                       </Button>
@@ -146,8 +159,8 @@ export default async function ReviewCentrePage({ searchParams }: { searchParams:
                       </Button>
                     </div>
                   </form>
-                </CardContent>
-              </Card>
+                }
+              />
             ))
           )}
         </div>

@@ -5,14 +5,14 @@ import { Field, Select, Textarea } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { sendMessageAction } from "./actions";
 
-export function MessageForm({ children }: { children: { id: string; displayName: string }[] }) {
+export function MessageForm({ childOptions }: { childOptions: { id: string; displayName: string }[] }) {
   const [state, formAction, isPending] = useActionState(sendMessageAction, null);
 
   return (
     <form action={formAction} className="space-y-4">
       <Field label="To">
         <Select name="childId" required>
-          {children.map((c) => (
+          {childOptions.map((c) => (
             <option key={c.id} value={c.id}>
               {c.displayName}
             </option>
@@ -27,7 +27,7 @@ export function MessageForm({ children }: { children: { id: string; displayName:
           <option value="General">General greeting</option>
         </Select>
       </Field>
-      <Field label="Message" required hint="MyFundAction reviews every message before it's delivered by Ufuk.">
+      <Field label="Message" required hint="MyFundAction reviews every message before it's delivered by our partner.">
         <Textarea name="content" required maxLength={800} placeholder="Write a warm, encouraging note…" />
       </Field>
       {state?.error && <p className="text-sm text-danger">{state.error}</p>}

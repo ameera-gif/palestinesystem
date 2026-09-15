@@ -1,6 +1,6 @@
 import { getProgrammeSettings, quarterlyAmount, type ProgrammeSettings } from "@/lib/settings";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Field, Input } from "@/components/ui/field";
+import { Field, Input, Textarea } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import { formatMoney } from "@/lib/format";
 import { updateSettingsAction } from "@/app/admin/settings/actions";
@@ -17,7 +17,7 @@ export async function ProgrammeSettingsForm() {
       <h1 className="text-2xl font-semibold text-ink mb-1">Programme Settings</h1>
       <p className="text-sm text-muted mb-6">
         These values drive every sponsorship amount, distribution cycle, reporting cycle, and meeting cadence in the
-        system — nothing is hard-coded. Current quarterly support: {formatMoney(quarterlyAmount(settings), settings.currency)}.
+        system. Nothing is hard-coded. Current quarterly support: {formatMoney(quarterlyAmount(settings), settings.currency)}.
       </p>
       <Card>
         <CardHeader>
@@ -43,6 +43,33 @@ export async function ProgrammeSettingsForm() {
               </Field>
             </div>
             <Button type="submit">Save Settings</Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Organisation info</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted -mt-2 mb-4">
+            Shown on the public About page, the Contact page, and the site footer. Edit it here instead of asking for
+            a code change.
+          </p>
+          <form action={updateSettingsAction} className="space-y-4">
+            <Field label="Organisation description" required hint="Shown on the About page.">
+              <Textarea name="orgDescription" defaultValue={settings.orgDescription} required className="min-h-32" />
+            </Field>
+            <Field label="Footer tagline" required hint="A shorter version, shown in the site footer on every page.">
+              <Textarea name="footerTagline" defaultValue={settings.footerTagline} required className="min-h-20" />
+            </Field>
+            <Field label="Registered address" required hint="One line per address line.">
+              <Textarea name="orgAddress" defaultValue={settings.orgAddress} required className="min-h-24" />
+            </Field>
+            <Field label="Phone" required>
+              <Input name="orgPhone" defaultValue={settings.orgPhone} required />
+            </Field>
+            <Button type="submit">Save Organisation Info</Button>
           </form>
         </CardContent>
       </Card>

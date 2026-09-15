@@ -42,7 +42,7 @@ export async function saveReportAction(
   formData: FormData,
 ): Promise<ReportFormState> {
   const session = await requireRole("UFUK");
-  if (!session.user.profileId) return { error: "Ufuk profile not found." };
+  if (!session.user.profileId) return { error: "Field staff profile not found." };
 
   const intent = String(formData.get("intent") ?? "draft");
   const input = readForm(formData);

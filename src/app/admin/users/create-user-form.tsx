@@ -21,7 +21,7 @@ export function CreateUserForm() {
       </Field>
       <Field label="Role" required>
         <Select name="role" required defaultValue="UFUK">
-          <option value="UFUK">Ufuk Field Team</option>
+          <option value="UFUK">Field Team</option>
           <option value="MYFUNDACTION_PC">MyFundAction Project Coordinator</option>
           <option value="ADMIN">System Administrator</option>
         </Select>
