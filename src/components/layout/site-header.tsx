@@ -37,8 +37,8 @@ export async function SiteHeader() {
       <div className="border-b border-border bg-paper/95 backdrop-blur-sm">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-3 shrink-0">
+            <Logo size={26} className="sm:hidden" />
             <Logo size={34} className="hidden sm:inline-flex" />
-            <Logo size={30} showWordmark={false} className="sm:hidden" />
             <span className="hidden xl:block h-6 w-px bg-border" />
             <span className="hidden xl:block text-xs font-medium text-muted leading-tight">
               Gaza Child
