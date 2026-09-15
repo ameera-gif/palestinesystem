@@ -1,6 +1,15 @@
+import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import { homeForRole } from "@/lib/rbac";
+import { authConfig } from "@/auth.config";
+import { homeForRole } from "@/lib/role-routes";
+
+// A separate, lightweight NextAuth instance built only from the
+// provider-free authConfig — NOT the `auth` exported by src/auth.ts, which
+// wires up the Credentials provider (Prisma + bcrypt) and is far too heavy
+// for the Edge Runtime's 1MB bundle limit. This instance can still read and
+// verify the session JWT (that's all middleware needs); it just can't run
+// authorize() to check a password, which middleware never does anyway.
+const { auth } = NextAuth(authConfig);
 
 const PORTAL_PREFIX_ROLES: Record<string, string> = {
   "/portal": "SPONSOR",

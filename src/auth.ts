@@ -2,13 +2,13 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { authConfig } from "@/auth.config";
 
-// Auth.js v5. Credentials + bcrypt for this demo — swap for SSO/OAuth later
-// without touching the RBAC model (role lives on User regardless of provider).
+// Full auth setup — Node.js runtime only (API routes, Server Components,
+// Server Actions), never imported by middleware.ts directly. See
+// auth.config.ts for why that split exists.
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  session: { strategy: "jwt" },
-  pages: { signIn: "/login" },
-  trustHost: true,
+  ...authConfig,
   providers: [
     Credentials({
       name: "Credentials",
@@ -49,20 +49,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    jwt({ token, user }) {
-      if (user?.id) {
-        token.uid = user.id;
-        token.role = user.role;
-        token.profileId = user.profileId;
-      }
-      return token;
-    },
-    session({ session, token }) {
-      session.user.id = token.uid;
-      session.user.role = token.role;
-      session.user.profileId = token.profileId;
-      return session;
-    },
-  },
 });
